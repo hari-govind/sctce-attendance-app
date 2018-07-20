@@ -2,9 +2,17 @@ import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {View, Text, Image, FlatList, StyleSheet, TouchableNativeFeedback} from 'react-native';
 import { Font } from 'expo';
+import AddAccount from './Accounts/AddAccount';
+import { createStackNavigator } from 'react-navigation';
 
 
 export default class Accounts extends React.Component {
+   render(){
+       return(<RootStack />);
+   }
+}
+
+class AccountsHome extends React.Component{
     async componentDidMount() {
         await Font.loadAsync({
           'kanit': require('../../assets/fonts/Kanit-Black.ttf'),
@@ -34,12 +42,13 @@ export default class Accounts extends React.Component {
         <View style={styles.optionsContainer}>
         <FlatList
           data={[
-            {key: 'md-person', option: 'Select Account', caption: 'Select Account to be used.cfyhn '},
-            {key: 'md-person-add', option: 'Add Account', caption: 'Add user accounts for easy access'},
-            {key: 'md-construct', option: 'Manage Accounts', caption: 'Edit details of stored accounts.'},
+            {screen:'SelectAccount',key: 'md-person', option: 'Select Account', caption: 'Select Account to be used.cfyhn '},
+            {screen:'AddAccount',key: 'md-person-add', option: 'Add Account', caption: 'Add user accounts for easy access'},
+            {screen:'ManageAccounts',key: 'md-construct', option: 'Manage Accounts', caption: 'Edit details of stored accounts.'},
           ]}
           renderItem={({item}) => 
-          <TouchableNativeFeedback background={TouchableNativeFeedback.SelectableBackground()} >
+          <TouchableNativeFeedback background={TouchableNativeFeedback.SelectableBackground()} 
+          onPress={() => this.props.navigation.navigate(item.screen)}>
           <View style={styles.optionContainer}>
           <Ionicons name={item.key} size={25} color="tomato" style={styles.icon} />
           <Text style={styles.option}>{item.option}</Text>
@@ -54,6 +63,23 @@ export default class Accounts extends React.Component {
         );
     }
 }
+
+
+
+const RootStack = createStackNavigator({
+    AccountsHome: {
+      screen: AccountsHome,
+    },
+    AddAccount: {
+      screen: AddAccount,
+    },
+    },
+    {
+      initialRouteName: 'AccountsHome',
+      headerMode: 'none',
+    }
+    );
+
 
 const styles = StyleSheet.create({
     container: {
