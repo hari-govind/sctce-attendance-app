@@ -3,6 +3,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {View, Text, Image, FlatList, StyleSheet, TouchableNativeFeedback} from 'react-native';
 import { Font } from 'expo';
 import AddAccount from './Accounts/AddAccount';
+import SelectAccount from './Accounts/SelectAccount';
+import ManageAccounts from './Accounts/ManageAccounts';
 import { createStackNavigator } from 'react-navigation';
 
 
@@ -72,6 +74,12 @@ const RootStack = createStackNavigator({
     },
     AddAccount: {
       screen: AddAccount,
+    },
+    SelectAccount: {
+      screen: SelectAccount,  
+    },
+    ManageAccounts: {
+      screen: ManageAccounts,  
     },
     },
     {
