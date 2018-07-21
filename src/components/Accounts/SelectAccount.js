@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, Text} from 'react-native';
 
 export default class SelectAccount extends React.Component {
     static navigationOptions = {
@@ -14,11 +14,3 @@ export default class SelectAccount extends React.Component {
     }
 }
 
-
-const styles = StyleSheet.create({
-    container: {
-        flex:1,
-        flexDirection: 'column'
-    },
-
-});
