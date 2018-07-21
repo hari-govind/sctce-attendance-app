@@ -1,15 +1,15 @@
 import React from 'react';
-import {View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacityl,
-    Button, Alert} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, TextInput, KeyboardAvoidingView,
+    Button, Alert,AsyncStorage} from 'react-native';
 
 export default class AddAccount extends React.Component {
     static navigationOptions = {
         title: 'Add Account',
       };
       state = {
-        name:'none',
-		register_number: 'none',
-        password: 'none',
+        name:'',
+		register_number: '',
+        password: '',
         processing: false,
 	}
     render(){
@@ -46,14 +46,14 @@ export default class AddAccount extends React.Component {
                                 placeholder="Enter Your Password Here." style={styles.input} 
                                 onChangeText={(password) => this.setState({password})}
                                 ref = {(input) => this.passwordInput = input}
-                                //onSubmitEditing={() => this.props.navigation.navigate('AttendancePage', {reg_no: this.state.register_number, password: this.state.password})}
+                                onSubmitEditing={() => controller.addAccount(this.state.name, this.state.register_number, this.state.password)}
 				            />
                             <View style={{flexDirection:'row', justifyContent: 'space-around'}}>
                             <Button 
                             title="Add Account"
                             accessibilityLabel="Add account with the above details."
                             onPress={() => {
-                                Alert.alert('You tapped the button!');
+                                controller.addAccount(this.state.name, this.state.register_number, this.state.password);
                               }}
                             color="tomato"
                             />
@@ -98,7 +98,28 @@ const styles = StyleSheet.create({
 
 var controller = {
     addAccount: async function(name,reg_no, password){
+        if(!(name == '' || password == '' || reg_no == '')){
+        user_data = {name, reg_no, password};
         const value = await AsyncStorage.getItem('ACCOUNTS');
-
+        if(value==null){
+            all_accounts = JSON.stringify([user_data]);
+            await AsyncStorage.setItem('ACCOUNTS', all_accounts);
+            Alert.alert(`Sucessfully Added ${name}!`);
+        } else {
+            json_value = JSON.parse(value);
+            pre_existing = json_value.find(x => x.reg_no===user_data.reg_no);
+            if (pre_existing == undefined){
+                json_value.push(user_data);
+                new_value = JSON.stringify(json_value);
+                await AsyncStorage.setItem('ACCOUNTS', new_value);
+                Alert.alert(`Sucessfully Added ${name}!`);
+            } else {
+                Alert.alert(`Register number ${reg_no} already in use for ${pre_existing.name}`);
+            }
+            
+        }
+    } else {
+        Alert.alert('Fields cannot be empty!')
+    }
     }
 };
