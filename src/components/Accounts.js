@@ -24,6 +24,9 @@ class AccountsHome extends React.Component{
       state = {
         fontLoaded: false,
       };
+      static navigationOptions = {
+        header: null,
+      };
     render(){
         return(
         <View style={styles.container}>
@@ -84,7 +87,7 @@ const RootStack = createStackNavigator({
     },
     {
       initialRouteName: 'AccountsHome',
-      headerMode: 'none',
+      //headerMode: 'none',
     }
     );
 
