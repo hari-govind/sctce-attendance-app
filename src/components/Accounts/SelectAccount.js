@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
 
 export default class SelectAccount extends React.Component {
     static navigationOptions = {
@@ -7,10 +7,23 @@ export default class SelectAccount extends React.Component {
       };
     render(){
         return(
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Select Account!!</Text>
-        </View>
+            <View style={styles.container}>
+                <Text style={styles.info}>
+                    Select active account from below. 
+                    Attendance details of the active user is shown in the attendance tab.
+                </Text>
+            </View>
         );
     }
 }
 
+const styles = StyleSheet.create({
+    container: {
+        flex:1,
+        flexDirection: 'column'
+    },
+    info: {
+        padding: 12,
+        color: 'gray',
+    }
+});
