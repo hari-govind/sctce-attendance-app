@@ -100,6 +100,7 @@ var controller = {
     addAccount: async function(name,reg_no, password){
         if(!(name == '' || password == '' || reg_no == '')){
         user_data = {name, reg_no, password};
+        user_data['key'] = reg_no;
         const value = await AsyncStorage.getItem('ACCOUNTS');
         if(value==null){
             all_accounts = JSON.stringify([user_data]);
