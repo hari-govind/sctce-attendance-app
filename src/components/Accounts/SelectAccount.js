@@ -16,8 +16,12 @@ export default class SelectAccount extends React.Component {
         rec = JSON.parse(record);
         this.setState({record: rec});
         this.setState({recordLoaded: true });
+        try{
         this.setState({ActiveAccount: (JSON.parse(await AsyncStorage.getItem('ActiveAccount'))).name})
         this.setState({hasActiveRecord: true})
+        } catch (err){
+            //pass
+        }
     }
 
     static navigationOptions = {
