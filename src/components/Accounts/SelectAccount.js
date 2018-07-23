@@ -60,6 +60,7 @@ export default class SelectAccount extends React.Component {
                 />
                 {
                  this.state.recordLoaded ? (    
+                this.state.record != null ? (
                 <FlatList
                     
                     data={this.state.record}
@@ -79,7 +80,8 @@ export default class SelectAccount extends React.Component {
                         
                     }
                     ItemSeparatorComponent={this.renderSeparator}
-                />) : <Text>Loading...</Text>
+                />) : <Text style={[styles.info]}>No stored accounts found. Please add
+                 an account using the add account option from the main menu.</Text>) : <Text>Loading...</Text>
                 }
             </View>
         );
@@ -103,11 +105,10 @@ const styles = StyleSheet.create({
         color: 'gray',
         justifyContent:'center',
     },
-    separator: {
-        flexDirection:'row',
+    seperator:{
         flex: 1,
-        height: 3,
-        backgroundColor: 'red',
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: '#8E8E8E',
     },
     option: {
         padding:12,
