@@ -54,10 +54,6 @@ export default class SelectAccount extends React.Component {
                      </Text>
                     }
                 </Text>
-                <Button
-                    title="Clear"
-                    onPress={() => AsyncStorage.clear()}
-                />
                 {
                  this.state.recordLoaded ? (    
                 this.state.record != null ? (
