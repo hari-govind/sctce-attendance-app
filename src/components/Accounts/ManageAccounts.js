@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, AsyncStorage, SwipeableFlatList, StyleSheet,
         TouchableNativeFeedback, TouchableHighlight, ToastAndroid,
-        Alert, Modal} from 'react-native';
+        Alert, Modal, ActivityIndicator,} from 'react-native';
 
    
 
@@ -16,9 +16,16 @@ export default class ManageAccounts extends React.Component {
         this.setState({recordLoaded: true });
     }
     state = {
-        recordLoaded: false
+        recordLoaded: false,
     }
 
+    renderSeparator = () => {
+        return (
+          <View
+            style={styles.seperator}
+          />
+        );
+    };
 
     render(){
         return(
@@ -29,6 +36,7 @@ export default class ManageAccounts extends React.Component {
             {
                 this.state.recordLoaded ? (
                    <SwipeableFlatList
+                        ItemSeparatorComponent={this.renderSeparator}
                         bounceFirstRowOnMount={true}
                         maxSwipeDistance={160}
                         data={this.state.record}
@@ -51,26 +59,30 @@ export default class ManageAccounts extends React.Component {
                         <TouchableHighlight
                           style={styles.actionButton}
                           onPress={() => {
-                            this.props.navigation.navigate('ModifyAccount')
+                            this.props.navigation.navigate('ModifyAccount', {name:item.name,
+                            key:item.key,password:item.password})
                           }}>
                           <Text style={styles.actionButtonText}>Edit</Text>
                         </TouchableHighlight>
                         <TouchableHighlight
                           style={[styles.actionButton, styles.actionButtonDestructive]}
                           onPress={() => {
-                            Alert.alert(
-                              'Tips',
-                              'You could do something with this remove action!',
-                            );
-                          }}>
-                          <Text style={styles.actionButtonText}>Remove</Text>
-                        </TouchableHighlight>
+                            index = this.state.record.findIndex(x => x.reg_no===item.reg_no);
+                            var all_rec = this.state.record
+                            all_rec.splice(index,1);
+                            new_value = JSON.stringify(all_rec);
+                            AsyncStorage.setItem('ACCOUNTS', new_value);
+                            ToastAndroid.show(`Sucessfully Removed ${item.name}!`, ToastAndroid.SHORT);
+                            this.forceUpdate();
+                        }}>
+                        <Text style={styles.actionButtonText}>Remove</Text>
+                      </TouchableHighlight>
                 </View>
                         }
                    />
-                ) : <Text>
-                    Loading
-                </Text>
+                ) : <View style={[styles.loading, styles.horizontal]}>
+                        <ActivityIndicator size="large" color="tomato" />
+                    </View>
                }
             </View>
 
@@ -125,5 +137,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
-    }
+    },
+    loading: {
+        flex: 1,
+        justifyContent: 'center'
+      },
+      horizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10
+      }
 });

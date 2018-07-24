@@ -1,15 +1,18 @@
 import React from 'react';
 import {View, Text, ScrollView, StyleSheet, TextInput, KeyboardAvoidingView,
-    Button, Alert,AsyncStorage} from 'react-native';
+    Button, Alert,AsyncStorage, ToastAndroid} from 'react-native';
 
 export default class ModifyAccount extends React.Component {
     static navigationOptions = {
         title: 'Modify Account',
       };
+      async componentDidMount() {
+        this.setState({original_key: this.props.navigation.getParam('key')});
+    }
       state = {
-        name:'',
-		register_number: '',
-        password: '',
+        name: this.props.navigation.getParam('name', 'noname'),
+		register_number: this.props.navigation.getParam('key', 'nokey'),
+        password: this.props.navigation.getParam('password', 'nopassword'),
         processing: false,
 	}
     render(){
@@ -27,16 +30,17 @@ export default class ModifyAccount extends React.Component {
                                 placeholder="Enter a name for this account"
                                 onChangeText={(name) => this.setState({name})}
                                 onSubmitEditing={() => this.registerInput.focus()}
+                                value={this.state.name}
                             />
                             <TextInput
                                 underlineColorAndroid={'tomato'}
                                 style={styles.input}
                                 returnKeyType="next"
-                                placeholder="Enter collage registration number"
                                 onChangeText={(register_number) => this.setState({register_number})}
                                 ref = {(input) => this.registerInput = input}
                                 onSubmitEditing={() => this.passwordInput.focus()}
                                 keyboardType="numeric"
+                                value={this.state.register_number}
                             />
                             <TextInput 
                                 underlineColorAndroid={'tomato'}
@@ -46,14 +50,17 @@ export default class ModifyAccount extends React.Component {
                                 placeholder="Enter Your Password Here." style={styles.input} 
                                 onChangeText={(password) => this.setState({password})}
                                 ref = {(input) => this.passwordInput = input}
-                                onSubmitEditing={() => controller.addAccount(this.state.name, this.state.register_number, this.state.password)}
-				            />
+                                value={this.state.password}
+                                onSubmitEditing={() => 
+                                    controller.modifyAccount(this.state.name, this.state.register_number, this.state.password, this.state.original_key,this.props.navigation)
+                                }
+                                    />
                             <View style={{flexDirection:'row', justifyContent: 'space-around'}}>
                             <Button 
                             title="Save"
                             accessibilityLabel="Modify account with the above details."
                             onPress={() => {
-                                controller.addAccount(this.state.name, this.state.register_number, this.state.password);
+                                controller.modifyAccount(this.state.name, this.state.register_number, this.state.password, this.state.original_key,this.props.navigation);
                               }}
                             color="tomato"
                             />
@@ -97,28 +104,26 @@ const styles = StyleSheet.create({
 
 
 var controller = {
-    addAccount: async function(name,reg_no, password){
+    modifyAccount: async function(name,reg_no, password, original_key,navigation){
         if(!(name == '' || password == '' || reg_no == '')){
         user_data = {name, reg_no, password};
         user_data['key'] = reg_no;
         const value = await AsyncStorage.getItem('ACCOUNTS');
-        if(value==null){
-            all_accounts = JSON.stringify([user_data]);
-            await AsyncStorage.setItem('ACCOUNTS', all_accounts);
-            Alert.alert(`Sucessfully Added ${name}!`);
+        json_value = JSON.parse(value);
+        pre_existing = json_value.find(x => x.reg_no===user_data.reg_no);
+        if (pre_existing == undefined || pre_existing.reg_no === original_key){
+            //Replace original with modified data
+            original_index = json_value.findIndex(x => x.reg_no===original_key);
+            json_value[original_index] = user_data;
+            new_value = JSON.stringify(json_value);
+            await AsyncStorage.setItem('ACCOUNTS', new_value);
+            ToastAndroid.show(`Sucessfully Modified ${name}!`, ToastAndroid.SHORT);
+            navigation.navigate('AccountsHome');
         } else {
-            json_value = JSON.parse(value);
-            pre_existing = json_value.find(x => x.reg_no===user_data.reg_no);
-            if (pre_existing == undefined){
-                json_value.push(user_data);
-                new_value = JSON.stringify(json_value);
-                await AsyncStorage.setItem('ACCOUNTS', new_value);
-                Alert.alert(`Sucessfully Added ${name}!`);
-            } else {
-                Alert.alert(`Register number ${reg_no} already in use for ${pre_existing.name}`);
+            Alert.alert(`Register number ${reg_no} already in use for ${pre_existing.name}`);
             }
             
-        }
+        
     } else {
         Alert.alert('Fields cannot be empty!')
     }
