@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, AsyncStorage, SwipeableFlatList, StyleSheet,
         TouchableNativeFeedback, TouchableHighlight, ToastAndroid,
-        Alert} from 'react-native';
+        Alert, Modal} from 'react-native';
 
    
 
@@ -51,9 +51,7 @@ export default class ManageAccounts extends React.Component {
                         <TouchableHighlight
                           style={styles.actionButton}
                           onPress={() => {
-                            Alert.alert(
-                                this.state.openRowKey
-                            );
+                            this.props.navigation.navigate('ModifyAccount')
                           }}>
                           <Text style={styles.actionButtonText}>Edit</Text>
                         </TouchableHighlight>

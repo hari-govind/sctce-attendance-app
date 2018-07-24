@@ -5,6 +5,7 @@ import { Font } from 'expo';
 import AddAccount from './Accounts/AddAccount';
 import SelectAccount from './Accounts/SelectAccount';
 import ManageAccounts from './Accounts/ManageAccounts';
+import ModifyAccount from './Accounts/ModifyAccount';
 import { createStackNavigator } from 'react-navigation';
 
 
@@ -83,6 +84,9 @@ const RootStack = createStackNavigator({
     },
     ManageAccounts: {
       screen: ManageAccounts,  
+    },
+    ModifyAccount: {
+        screen: ModifyAccount,
     },
     },
     {
