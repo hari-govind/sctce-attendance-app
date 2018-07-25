@@ -119,6 +119,9 @@ var controller = {
             await AsyncStorage.setItem('ACCOUNTS', new_value);
             ToastAndroid.show(`Sucessfully Modified ${name}!`, ToastAndroid.SHORT);
             navigation.navigate('AccountsHome');
+            if((JSON.parse(await AsyncStorage.getItem('ActiveAccount'))).key == original_key){
+                AsyncStorage.removeItem('ActiveAccount')
+              }
         } else {
             Alert.alert(`Register number ${reg_no} already in use for ${pre_existing.name}`);
             }

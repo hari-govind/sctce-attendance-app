@@ -32,7 +32,7 @@ export default class AddAccount extends React.Component {
                                 underlineColorAndroid={'tomato'}
                                 style={styles.input}
                                 returnKeyType="next"
-                                placeholder="Enter collage registration number"
+                                placeholder="Enter college registration number"
                                 onChangeText={(register_number) => this.setState({register_number})}
                                 ref = {(input) => this.registerInput = input}
                                 onSubmitEditing={() => this.passwordInput.focus()}
@@ -113,9 +113,10 @@ var controller = {
                 json_value.push(user_data);
                 new_value = JSON.stringify(json_value);
                 await AsyncStorage.setItem('ACCOUNTS', new_value);
-                Alert.alert(`Sucessfully Added ${name}!`);
+                Alert.alert('Account Sucessfully Added!', `You can now choose ${name} from Select Accounts menu.`);
             } else {
-                Alert.alert(`Register number ${reg_no} already in use for ${pre_existing.name}`);
+                Alert.alert(`Register number ${reg_no} already in use for ${pre_existing.name}`,
+                "The register number you've entered for this account is already in use for another account.");
             }
             
         }

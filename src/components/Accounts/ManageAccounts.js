@@ -14,6 +14,7 @@ export default class ManageAccounts extends React.Component {
         rec = JSON.parse(record);
         this.setState({record: rec});
         this.setState({recordLoaded: true });
+        this.setState({ActiveAccount: (JSON.parse(await AsyncStorage.getItem('ActiveAccount')))})
     }
     state = {
         recordLoaded: false,
@@ -67,13 +68,23 @@ export default class ManageAccounts extends React.Component {
                         <TouchableHighlight
                           style={[styles.actionButton, styles.actionButtonDestructive]}
                           onPress={() => {
-                            index = this.state.record.findIndex(x => x.reg_no===item.reg_no);
-                            var all_rec = this.state.record
-                            all_rec.splice(index,1);
-                            new_value = JSON.stringify(all_rec);
-                            AsyncStorage.setItem('ACCOUNTS', new_value);
-                            ToastAndroid.show(`Sucessfully Removed ${item.name}!`, ToastAndroid.SHORT);
-                            this.forceUpdate();
+                            Alert.alert('Remove Selected Account ?', 'Clicking yes will remove all records assosiated with the selected account.',
+                            [
+                                {text: 'No'},
+                                {text: 'Yes', onPress: () => {
+                                    index = this.state.record.findIndex(x => x.reg_no===item.reg_no);
+                                    var all_rec = this.state.record
+                                    all_rec.splice(index,1);
+                                 new_value = JSON.stringify(all_rec);
+                                 AsyncStorage.setItem('ACCOUNTS', new_value);
+                                ToastAndroid.show(`Sucessfully Removed ${item.name}!`, ToastAndroid.SHORT);
+                                 this.forceUpdate();
+                                 if(this.state.ActiveAccount.key == item.key){
+                                   AsyncStorage.removeItem('ActiveAccount')
+                                 }
+                                }},
+                              ]
+                        )
                         }}>
                         <Text style={styles.actionButtonText}>Remove</Text>
                       </TouchableHighlight>
