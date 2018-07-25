@@ -26,14 +26,16 @@ export default class AddAccount extends React.Component {
                                 returnKeyType="next"
                                 placeholder="Enter a name for this account"
                                 onChangeText={(name) => this.setState({name})}
+                                value={this.state.name}
                                 onSubmitEditing={() => this.registerInput.focus()}
                             />
                             <TextInput
                                 underlineColorAndroid={'tomato'}
                                 style={styles.input}
-                                returnKeyType="next"
+                                returnKeyType="next" 
                                 placeholder="Enter college registration number"
                                 onChangeText={(register_number) => this.setState({register_number})}
+                                value={this.state.register_number}
                                 ref = {(input) => this.registerInput = input}
                                 onSubmitEditing={() => this.passwordInput.focus()}
                                 keyboardType="numeric"
@@ -45,16 +47,27 @@ export default class AddAccount extends React.Component {
                                 returnKeyType="go"
                                 placeholder="Enter Your Password Here." style={styles.input} 
                                 onChangeText={(password) => this.setState({password})}
+                                value={this.state.password}
                                 ref = {(input) => this.passwordInput = input}
-                                onSubmitEditing={() => controller.addAccount(this.state.name, this.state.register_number, this.state.password)}
-				            />
+                                onSubmitEditing={() => {
+                                    controller.addAccount(this.state.name, this.state.register_number, this.state.password)
+                                    this.state.name = ""
+                                    this.state.register_number = ""
+                                    this.state.password = ""
+                                    this.forceUpdate();
+                                }}
+                            />
                             <View style={{flexDirection:'row', justifyContent: 'space-around'}}>
                             <Button 
                             title="Add Account"
                             accessibilityLabel="Add account with the above details."
                             onPress={() => {
                                 controller.addAccount(this.state.name, this.state.register_number, this.state.password);
-                              }}
+                                this.state.name = ""
+                                this.state.register_number = ""
+                                this.state.password = ""
+                                this.forceUpdate();
+                            }}
                             color="tomato"
                             />
                             </View>
@@ -114,6 +127,7 @@ var controller = {
                 new_value = JSON.stringify(json_value);
                 await AsyncStorage.setItem('ACCOUNTS', new_value);
                 Alert.alert('Account Sucessfully Added!', `You can now choose ${name} from Select Accounts menu.`);
+
             } else {
                 Alert.alert(`Register number ${reg_no} already in use for ${pre_existing.name}`,
                 "The register number you've entered for this account is already in use for another account.");

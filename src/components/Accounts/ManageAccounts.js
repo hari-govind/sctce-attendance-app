@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, AsyncStorage, SwipeableFlatList, StyleSheet,
         TouchableNativeFeedback, TouchableHighlight, ToastAndroid,
-        Alert, Modal, ActivityIndicator,Button} from 'react-native';
+        Alert, Modal, ActivityIndicator,Button,ScrollView} from 'react-native';
 
    
 
@@ -30,11 +30,12 @@ export default class ManageAccounts extends React.Component {
 
     render(){
         return(
-            <View styles={styles.container}>
+            <ScrollView styles={styles.container}>
              <Text style={styles.info}>Accounts stored on your phone are listed below. Swipe
               on the account to be modified or removed.</Text>
               <Button
             title="Clear All Accounts"
+            color="tomato"
             onPress={() => {
                 Alert.alert('Remove All Accounts ?', 'Clicking yes will remove all accounts below. No further warnings will be prompted!',
                 [
@@ -47,7 +48,7 @@ export default class ManageAccounts extends React.Component {
                 ])
             }}
             />
-
+            <View styles={styles.container}>
             {
                 this.state.recordLoaded ? (
                    <SwipeableFlatList
@@ -93,8 +94,11 @@ export default class ManageAccounts extends React.Component {
                                  AsyncStorage.setItem('ACCOUNTS', new_value);
                                 ToastAndroid.show(`Sucessfully Removed ${item.name}!`, ToastAndroid.SHORT);
                                  this.forceUpdate();
+                                 try{
                                  if(this.state.ActiveAccount.key == item.key){
                                    AsyncStorage.removeItem('ActiveAccount')
+                                 }} catch(err){
+                                     console.log('No active accounts.')
                                  }
                                 }},
                               ]
@@ -109,7 +113,8 @@ export default class ManageAccounts extends React.Component {
                         <ActivityIndicator size="large" color="tomato" />
                     </View>
                }
-            </View>
+               </View>
+            </ScrollView>
 
         );
     }
@@ -119,7 +124,7 @@ export default class ManageAccounts extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex:1,
-        flexDirection: 'column'
+       flexDirection: 'column'
     },
     info: {
         padding: 12,
