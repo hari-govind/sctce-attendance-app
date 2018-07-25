@@ -105,7 +105,7 @@ var controller = {
         if(value==null){
             all_accounts = JSON.stringify([user_data]);
             await AsyncStorage.setItem('ACCOUNTS', all_accounts);
-            Alert.alert(`Sucessfully Added ${name}!`);
+            Alert.alert('Account Sucessfully Added!', `You can now choose ${name} from Select Accounts menu.`);
         } else {
             json_value = JSON.parse(value);
             pre_existing = json_value.find(x => x.reg_no===user_data.reg_no);

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, AsyncStorage, SwipeableFlatList, StyleSheet,
         TouchableNativeFeedback, TouchableHighlight, ToastAndroid,
-        Alert, Modal, ActivityIndicator,} from 'react-native';
+        Alert, Modal, ActivityIndicator,Button} from 'react-native';
 
    
 
@@ -33,6 +33,20 @@ export default class ManageAccounts extends React.Component {
             <View styles={styles.container}>
              <Text style={styles.info}>Accounts stored on your phone are listed below. Swipe
               on the account to be modified or removed.</Text>
+              <Button
+            title="Clear All Accounts"
+            onPress={() => {
+                Alert.alert('Remove All Accounts ?', 'Clicking yes will remove all accounts below. No further warnings will be prompted!',
+                [
+                    {text: 'No'},
+                    {text: 'Yes', onPress: () => {
+                        AsyncStorage.removeItem('ACCOUNTS')
+                        ToastAndroid.show('All accounts removed.',ToastAndroid.SHORT)
+                        this.props.navigation.navigate('AccountsHome');
+                    }}
+                ])
+            }}
+            />
 
             {
                 this.state.recordLoaded ? (
@@ -135,13 +149,15 @@ const styles = StyleSheet.create({
     actionButton: {
         padding: 10,
         width: 80,
-        backgroundColor: '#999999',
+        backgroundColor: 'limegreen',
       },
       actionButtonDestructive: {
-        backgroundColor: '#FF0000',
+        backgroundColor: 'tomato',
+        
       },
       actionButtonText: {
         textAlign: 'center',
+        color: 'white',
     },
     actionsContainer: {
         flex: 1,
