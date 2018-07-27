@@ -27,6 +27,7 @@ class AccountsHome extends React.Component{
       };
       static navigationOptions = {
         header: null,
+        swipeEnabled: true,
       };
     render(){
         return(
