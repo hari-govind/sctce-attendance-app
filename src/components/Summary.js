@@ -58,15 +58,15 @@ export default class Summary extends React.Component {
         var tintColor = '#512DA8'
         switch (status) {
             case 'Excellent':
-                iconName = 'md-checkmark-circle-outline'
+                iconName = 'ios-checkmark-circle'
                 tintColor = '#388E3C'
                 break
             case 'Good':
-                iconName = 'md-pulse'
+                iconName = 'ios-alert'
                 tintColor = '#FBC02D'
                 break
             case 'Try to improve':
-                iconName = 'md-close'
+                iconName = 'ios-close-circle'
                 tintColor = '#d32f2f'
                 break
         }
@@ -204,5 +204,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin:0,
     },
-    
+    data_container: {
+        flexDirection:'row'
+    },
+    data_icon: {
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    data_subject_container: {
+        flex: 4
+    }
 })

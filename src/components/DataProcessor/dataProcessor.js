@@ -75,7 +75,7 @@ import cheerio from 'react-native-cheerio';
                      subject_name = matched_subject[1]
                      if(percentage >= "85%" || percentage === "100%"){
                          status = "Excellent"
-                     } else if (percentage >= "80%"){
+                     } else if (percentage >= "75%"){
                          status = "Good"
                      } else {
                          status = "Try to improve"
