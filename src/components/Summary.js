@@ -1,9 +1,10 @@
 import React from 'react';
 import {View, Text, AsyncStorage, ActivityIndicator, StyleSheet
-    , FlatList, StatusBar, Image} from 'react-native';
+    , FlatList, StatusBar, Image, Dimensions} from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import TextTicker from "react-native-text-ticker";
 import {getSummaryJSON} from './DataProcessor/dataProcessor.js';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default class Summary extends React.Component {
 
@@ -52,6 +53,34 @@ export default class Summary extends React.Component {
         this.reloadData()
     }
 
+    renderIcon(status){
+        var iconName = 'md-help'
+        var tintColor = '#512DA8'
+        switch (status) {
+            case 'Excellent':
+                iconName = 'ios-checkmark-circle'
+                tintColor = '#388E3C'
+                break
+            case 'Good':
+                iconName = 'ios-alert'
+                tintColor = '#FBC02D'
+                break
+            case 'Try to improve':
+                iconName = 'ios-close-circle'
+                tintColor = '#d32f2f'
+                break
+        }
+        return(<Ionicons name={iconName} size={25} color={tintColor} />)
+    }
+
+    renderSeparator = () => {
+        return (
+          <View
+            style={styles.seperator}
+          />
+        );
+    };
+
 
     state = {
         isLoaded: false,
@@ -97,7 +126,23 @@ export default class Summary extends React.Component {
               <Text style={styles.date}> Last Updated: {this.state.updated_date}</Text>
           </View>
           </View>
-        <Text>{JSON.stringify(this.state.summary)}</Text>
+          <View style={{flex:1}}>
+          <FlatList
+            ItemSeparatorComponent={this.renderSeparator}         
+            data ={this.state.summary.Summary}
+            keyExtractor={item => item.subject}
+            style={{width:Dimensions.get('window').width}}
+            renderItem = {({item}) =>
+              <View style={styles.data_container}>
+                 <View style={styles.data_icon}>{this.renderIcon(item.status)}</View> 
+                 <View style={styles.data_subject_container}>
+                 <Text style={styles.subject}>{item.subject}</Text>
+                 <Text style={styles.percentage}>{item.percentage}</Text>
+                 </View>
+              </View>
+        }
+        />
+        </View>
         </View>
         ) : (
         this.state.hasActiveRecord?(
@@ -119,18 +164,23 @@ const styles = StyleSheet.create({
         justifyContent:'center', 
         alignItems:'center'},
     container: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        flex:1,
+        justifyContent: 'center',
+        alignItems:'center'
     },
     student_info: {
-        flex: 1,
         marginTop: StatusBar.currentHeight,
         flexDirection: 'column',
         backgroundColor: 'tomato',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     student_info_text: {
         color: 'white',
         fontSize: 15,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
     overall_container: {
         flex: 2,
@@ -145,7 +195,6 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         flexDirection: 'row',
         padding: 5,
-        flex:1
     },
     image_container:{
         flex:1,
@@ -166,4 +215,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin:0,
     },
+    data_container: {
+        flexDirection:'row'
+    },
+    data_icon: {
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    data_subject_container: {
+        flex: 4,
+        padding:12,
+    },
+    seperator:{
+        flex: 1,
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: '#8E8E8E',
+    },
+    subject: {
+        fontSize: 15
+    },
+    percentage: {
+        fontSize: 15,
+        fontWeight: 'bold'
+    }
 })
