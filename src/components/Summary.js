@@ -117,9 +117,11 @@ export default class Summary extends React.Component {
               <Text style={styles.date}> Last Updated: {this.state.updated_date}</Text>
           </View>
           </View>
+          <View style={{flex:1}}>
           <FlatList
             data ={this.state.summary.Summary}
             keyExtractor={item => item.subject}
+            style={{width:Dimensions.get('window').width}}
             renderItem = {({item}) =>
               <View style={styles.data_container}>
                  <View style={styles.data_icon}>{this.renderIcon(item.status)}</View> 
@@ -130,6 +132,7 @@ export default class Summary extends React.Component {
               </View>
         }
         />
+        </View>
         </View>
         ) : (
         this.state.hasActiveRecord?(
@@ -152,17 +155,22 @@ const styles = StyleSheet.create({
         alignItems:'center'},
     container: {
         flexDirection: 'column',
+        flex:1,
+        justifyContent: 'center',
+        alignItems:'center'
     },
     student_info: {
-        flex: 1,
         marginTop: StatusBar.currentHeight,
         flexDirection: 'column',
         backgroundColor: 'tomato',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     student_info_text: {
         color: 'white',
         fontSize: 15,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
     overall_container: {
         flex: 2,
@@ -176,7 +184,6 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         flexDirection: 'row',
         padding: 5,
-        flex:1
     },
     image_container:{
         flex:1,
@@ -197,4 +204,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin:0,
     },
+    
 })
