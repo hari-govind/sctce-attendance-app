@@ -59,7 +59,8 @@ import cheerio from 'react-native-cheerio';
         getAttendanceData: function(html) {
             var $ = cheerio.load(html);
             let data = {};
-            let summary_data = {};
+            let summary_data = [];
+            let overall_data = [];
             $("table tr").each(function() {
                 $currentRow = $(this);
                 var subject = $currentRow.first().children().first().text().trim();
@@ -67,8 +68,23 @@ import cheerio from 'react-native-cheerio';
                 var pattern = new RegExp(/^Attendance Details of (.*)$/);
                 var matched = subject.match(pattern);
                 if (!matched){
-                    if (subject != "")
-                    summary_data[subject] = percentage;
+                    if (subject != ""){
+                    var subject_pattern = new RegExp(/^Attendance percentage for (.*)$/);
+                    matched_subject = subject.match(subject_pattern)
+                    if(matched_subject){    
+                     subject_name = matched_subject[1]
+                     if(percentage >= "85%" || percentage === "100%"){
+                         status = "Excellent"
+                     } else if (percentage >= "80%"){
+                         status = "Good"
+                     } else {
+                         status = "Try to improve"
+                     }
+                     summary_data.push({"subject": subject_name,"percentage":percentage,"status": status})
+                    } else {
+                        overall_data.push({key:subject, 'percentage':percentage})
+                    }    
+                }
                 } else {
                     student_details_array = matched[1].split(',');
                     student_details = {};
@@ -78,6 +94,7 @@ import cheerio from 'react-native-cheerio';
                     data['Student'] = student_details;
                 }
                 data['Summary'] = summary_data;
+                data['Overall'] = overall_data;
             });
           return data;
         },
