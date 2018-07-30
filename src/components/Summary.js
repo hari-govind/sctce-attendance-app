@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, Text, AsyncStorage, ActivityIndicator, StyleSheet
-    , FlatList, StatusBar, Image, Dimensions} from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';    
+    , FlatList, StatusBar, Image} from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import TextTicker from "react-native-text-ticker";
 import {getSummaryJSON} from './DataProcessor/dataProcessor.js';
@@ -53,25 +52,6 @@ export default class Summary extends React.Component {
         this.reloadData()
     }
 
-    renderIcon(status){
-        var iconName = 'md-help'
-        var tintColor = '#512DA8'
-        switch (status) {
-            case 'Excellent':
-                iconName = 'md-checkmark-circle-outline'
-                tintColor = '#388E3C'
-                break
-            case 'Good':
-                iconName = 'md-pulse'
-                tintColor = '#FBC02D'
-                break
-            case 'Try to improve':
-                iconName = 'md-close'
-                tintColor = '#d32f2f'
-                break
-        }
-        return(<Ionicons name={iconName} size={25} color={tintColor} />)
-    }
 
     state = {
         isLoaded: false,
@@ -117,19 +97,7 @@ export default class Summary extends React.Component {
               <Text style={styles.date}> Last Updated: {this.state.updated_date}</Text>
           </View>
           </View>
-          <FlatList
-            data ={this.state.summary.Summary}
-            keyExtractor={item => item.subject}
-            renderItem = {({item}) =>
-              <View style={styles.data_container}>
-                 <View style={styles.data_icon}>{this.renderIcon(item.status)}</View> 
-                 <View style={styles.data_subject_container}>
-                 <Text>{item.subject}</Text>
-                 <Text>{item.percentage}</Text>
-                 </View>
-              </View>
-        }
-        />
+        <Text>{JSON.stringify(this.state.summary)}</Text>
         </View>
         ) : (
         this.state.hasActiveRecord?(
@@ -151,7 +119,7 @@ const styles = StyleSheet.create({
         justifyContent:'center', 
         alignItems:'center'},
     container: {
-        flexDirection: 'column',
+        flexDirection: 'column'
     },
     student_info: {
         flex: 1,
@@ -166,6 +134,7 @@ const styles = StyleSheet.create({
     },
     overall_container: {
         flex: 2,
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
 
