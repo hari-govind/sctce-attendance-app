@@ -73,6 +73,15 @@ export default class Summary extends React.Component {
         return(<Ionicons name={iconName} size={25} color={tintColor} />)
     }
 
+    renderSeparator = () => {
+        return (
+          <View
+            style={styles.seperator}
+          />
+        );
+    };
+
+
     state = {
         isLoaded: false,
     }
@@ -119,6 +128,7 @@ export default class Summary extends React.Component {
           </View>
           <View style={{flex:1}}>
           <FlatList
+            ItemSeparatorComponent={this.renderSeparator}         
             data ={this.state.summary.Summary}
             keyExtractor={item => item.subject}
             style={{width:Dimensions.get('window').width}}
@@ -126,8 +136,8 @@ export default class Summary extends React.Component {
               <View style={styles.data_container}>
                  <View style={styles.data_icon}>{this.renderIcon(item.status)}</View> 
                  <View style={styles.data_subject_container}>
-                 <Text>{item.subject}</Text>
-                 <Text>{item.percentage}</Text>
+                 <Text style={styles.subject}>{item.subject}</Text>
+                 <Text style={styles.percentage}>{item.percentage}</Text>
                  </View>
               </View>
         }
@@ -213,6 +223,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     data_subject_container: {
-        flex: 4
+        flex: 4,
+        padding:12,
+    },
+    seperator:{
+        flex: 1,
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: '#8E8E8E',
+    },
+    subject: {
+        fontSize: 15
+    },
+    percentage: {
+        fontSize: 15,
+        fontWeight: 'bold'
     }
 })
