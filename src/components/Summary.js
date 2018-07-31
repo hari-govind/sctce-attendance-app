@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, AsyncStorage, ActivityIndicator, StyleSheet
-    , FlatList, StatusBar, Image, Dimensions} from 'react-native';
+    , FlatList, StatusBar, Image, Dimensions, TextInput} from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import TextTicker from "react-native-text-ticker";
 import {getSummaryJSON} from './DataProcessor/dataProcessor.js';
@@ -81,6 +81,15 @@ export default class Summary extends React.Component {
         );
     };
 
+    _onChangeFilterText = (filterText) => {
+        this.setState({filterText});
+        const filterRegex = new RegExp(String(this.state.filterText), 'i');
+        const filter = (item) => (
+        filterRegex.test(item.subject)
+    );
+        const filteredData = this.state.summary.Summary.filter(filter);
+        this.setState({filteredData})
+    };
 
     state = {
         isLoaded: false,
@@ -127,9 +136,18 @@ export default class Summary extends React.Component {
           </View>
           </View>
           <View style={{flex:1}}>
+          <View style={{height: 50}}>
+          <TextInput
+            underlineColorAndroid={'tomato'}
+            style={styles.input}
+            placeholder="Search by subject..."
+            onChangeText={this._onChangeFilterText}
+            value={this.state.filterText}
+            />
+            </View>
           <FlatList
             ItemSeparatorComponent={this.renderSeparator}         
-            data ={this.state.summary.Summary}
+            data ={this.state.filteredData && this.state.filterText!=''? this.state.filteredData : this.state.summary.Summary}
             keyExtractor={item => item.subject}
             style={{width:Dimensions.get('window').width}}
             renderItem = {({item}) =>
@@ -238,5 +256,10 @@ const styles = StyleSheet.create({
     percentage: {
         fontSize: 15,
         fontWeight: 'bold'
-    }
+    },
+    input: {
+        flex: 1,
+        padding: 10,
+        color: 'tomato'
+    },
 })
