@@ -24,6 +24,7 @@
     "react-native": "~0.55.2",
     "react-native-cheerio": "^1.0.0-rc.4",
     "react-native-cookies": "^3.3.0",
+    "react-native-text-ticker": "^0.12.0",
     "react-native-vector-icons": "^4.6.0",
     "react-navigation": "^2.6.2",
     "utils": "^0.3.1"
