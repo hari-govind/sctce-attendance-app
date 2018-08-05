@@ -29,7 +29,7 @@ export default class Summary extends React.Component {
                 reactThis.setState({loadedKey:reactThis.state.ActiveAccount.key})
             })
             .catch((err) => {
-                reactThis.setState({error: true})
+                this.setState({error: true})
             })
         } catch (err) {
             reactThis.setState({hasActiveRecord: false})
