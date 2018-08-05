@@ -14,6 +14,17 @@ import cheerio from 'react-native-cheerio';
     })
     }
     
+    export async function getDetailsJSON(username,password){
+        return new Promise((resolve, reject) => {
+            controller.getDetailedHTML(username,password)
+            .then((content) => {
+                var data = controller.getDetailedAttendance(content);
+                console.log(data)
+                resolve(data);
+            })
+            .catch((err) => console.log(err))
+        })
+    }
 
 
 
@@ -130,7 +141,7 @@ import cheerio from 'react-native-cheerio';
                 })
             })
         },
-        getDetailedHtml: function(username,password){
+        getDetailedHTML: function(username,password){
             return new Promise((resolve, reject) => {
                 fetch('http://www.campusoftonline.com/atten/checklogin.php', {method: 'POST',
                 body:`userid=${username}&mypassword=${password}&submit=Login`, headers: {
@@ -139,7 +150,11 @@ import cheerio from 'react-native-cheerio';
                 }
             })
               .then(function(response) {
-                return response.headers.get('set-cookie').split(';')[0];
+                try{
+                    return response.headers.get('set-cookie').split(';')[0];
+                    } catch (err){
+                        return null
+                    }
               })
               .then(function(myJson) {
                 fetch('http://www.campusoftonline.com/atten/attendance/student_search2.php?display=Detailed+Attendance',
