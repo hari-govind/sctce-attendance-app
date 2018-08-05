@@ -19,7 +19,6 @@ import cheerio from 'react-native-cheerio';
             controller.getDetailedHTML(username,password)
             .then((content) => {
                 var data = controller.getDetailedAttendance(content);
-                console.log(data)
                 resolve(data);
             })
             .catch((err) => console.log(err))
