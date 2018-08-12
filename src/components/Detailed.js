@@ -39,8 +39,13 @@ export default class Detailed extends React.Component {
         }
     }
 
+    
+
     async formatCalenderData(){
         detailedJSON = this.state.detailed
+        startdate = detailedJSON[0].Date
+        enddate = detailedJSON[detailedJSON.length - 1].Date
+        numberofmonths = Number(enddate.split("-")[1]) - Number(startdate.split("-")[1])
         result = {}
         for(i=0;i<detailedJSON.length;i++){
           period = []
@@ -49,6 +54,9 @@ export default class Detailed extends React.Component {
           result[detailedJSON[i]["Date"]] = period
         }
         this.setState({calenderData: result})
+        this.setState({startdate})
+        this.setState({enddate})
+        this.setState({numberofmonths})
     }
     renderSeparator = () => {
         return (
@@ -92,10 +100,16 @@ state = {
                     <View>
                     <View style={{flex:1, paddingBottom: StatusBar.currentHeight}}>
                     <Agenda
+                        pastScrollRange={this.state.numberofmonths}
+                        futureScrollRange={1}
+                        selected={this.state.enddate}
+                        minDate={this.state.startdate}
+                        maxDate={this.state.enddate}
                         style={{ width: Dimensions.get('window').width}}
                         items={this.state.calenderData}
                         renderItem={this.renderCalendarItem.bind(this)}
-                        renderEmptyDate={() => {return (<View><Text>Not a working day.</Text></View>);}}
+                        renderEmptyDate={() => {return (<View/>);}}
+                        renderEmptyData = {() => {return (<View />);}}
                         rowHasChanged={(r1, r2) => {return r1.text !== r2.text}}
                     />
                     </View>
@@ -128,7 +142,7 @@ state = {
         //<Text>{item.text[0].Subject}{console.log(item.text[0]["Subject"])}</Text>
         return(<View style={[styles.item, {height: item.height, flex:1}]}>
         <FlatList
-            ItemSeparatorComponent={this.renderSeparator} 
+            ItemSeparatorComponent={this.renderSeparator}
             data={list_data}
             keyExtractor={item => item.ID}
             renderItem = {({item}) =>
