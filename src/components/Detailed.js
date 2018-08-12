@@ -46,9 +46,9 @@ export default class Detailed extends React.Component {
        for(i=0;i<detailedJSON.length;i++){
            num_of_abscents = detailedJSON[i]["AbNumHours"]
            num_of_presence = detailedJSON[i]["PrNumHours"]
-           dots = [{color: 'red'},{color: 'orange'}]
+           dots = [{color: 'orange'}]
            if(num_of_presence == 0){
-               dots = [{color: 'red'}, {color: 'red'}, {color: 'red'}]
+               dots = [{color: 'red'}]
            } else if(num_of_abscents==0){
                 dots = [{color: 'green'}]
            }
@@ -119,7 +119,7 @@ state = {
                     <Agenda
                         markingType={'multi-dot'} 
                         markedDates = {this.state.markedDates}
-                        pastScrollRange={this.state.numberofmonths}
+                        pastScrollRange={this.state.numberofmonths+1}
                         futureScrollRange={1}
                         selected={this.state.enddate}
                         minDate={this.state.startdate}
@@ -130,6 +130,19 @@ state = {
                         renderEmptyDate={() => {return (<View/>);}}
                         renderEmptyData = {() => {return (<View />);}}
                         rowHasChanged={(r1, r2) => {return r1.text !== r2.text}}
+                        theme={{
+                            'stylesheet.day.multiDot' : {
+                               dot: {
+                                    width: 28,
+                                    height: 4,
+                                    marginTop: 1,
+                                    marginLeft: 1,
+                                    marginRight: 1,
+                                    borderRadius: 4,
+                                    opacity: 0
+                              },
+                          }
+                        }}
                     />
                     </View>
                     </View>
