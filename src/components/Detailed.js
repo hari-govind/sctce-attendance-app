@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, ScrollView, Text, AsyncStorage, StyleSheet,
-    StatusBar, ActivityIndicator} from 'react-native';
+    StatusBar, ActivityIndicator, Dimensions} from 'react-native';
 import {getDetailsJSON} from './DataProcessor/dataProcessor.js';
 import { NavigationEvents } from 'react-navigation';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
@@ -24,6 +24,7 @@ export default class Detailed extends React.Component {
                 date = new Date()
                 updated_date = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`
                 reactThis.setState({updated_date})
+                reactThis.formatCalenderData()
                 reactThis.setState({isLoaded: true})
                 reactThis.setState({loadedKey:reactThis.state.ActiveAccount.key})
             })
@@ -34,6 +35,18 @@ export default class Detailed extends React.Component {
             this.setState({hasActiveRecord: false})
             console.log('Err' + err)
         }
+    }
+
+    async formatCalenderData(){
+        detailedJSON = this.state.detailed
+        result = {}
+        for(i=0;i<detailedJSON.length;i++){
+          period = []
+          periods = detailedJSON[i]["Periods"]
+          period.push({text: periods})
+          result[detailedJSON[i]["Date"]] = period
+        }
+        this.setState({calenderData: result})
     }
 
     async reloadIfNeeded() {
@@ -63,17 +76,22 @@ state = {
             />
             {
                 this.state.isLoaded ? (
-                    <View>
+                    <View style={{flex:1}}>
                     <View style={{marginTop: StatusBar.currentHeight}}>
                         <Text>Detailed Attendance for {this.state.ActiveAccount.name}</Text>
                     </View>
-                    <ScrollView>
-                    <Text>{JSON.stringify(this.state.detailed)}</Text>
-                    </ScrollView>
+                    <View>
+                    <Text>test</Text>
+                    <Agenda
+                        style={{ width: Dimensions.get('window').width}}
+                        items={this.state.calenderData}
+                        renderItem={(item) => {return ( <View style={[styles.item, {height: item.height}]}><Text>{item.text[0].Subject}{console.log(item.text[0]["Subject"])}</Text></View>);}}
+                        rowHasChanged={(r1, r2) => {return r1.text !== r2.text}}
+                    />
+                    </View>
                     </View>
                 ) : <View><ActivityIndicator size={75} color="tomato" /><Text>Processing Data, Please Wait.</Text></View>
             }
-            <Calender />
         </View>
         );
     }
@@ -90,5 +108,13 @@ styles = StyleSheet.create({
         flex:1,
         justifyContent: 'center',
         alignItems:'center'
+    },
+    item: {
+        backgroundColor: 'white',
+        flex: 1,
+        borderRadius: 5,
+        padding: 10,
+        marginRight: 10,
+        marginTop: 17
     },
 })
