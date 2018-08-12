@@ -3,6 +3,7 @@ import {View, ScrollView, Text, AsyncStorage, StyleSheet,
     StatusBar, ActivityIndicator} from 'react-native';
 import {getDetailsJSON} from './DataProcessor/dataProcessor.js';
 import { NavigationEvents } from 'react-navigation';
+import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 
 export default class Detailed extends React.Component {
 
@@ -72,7 +73,7 @@ state = {
                     </View>
                 ) : <View><ActivityIndicator size={75} color="tomato" /><Text>Processing Data, Please Wait.</Text></View>
             }
-
+            <Calender />
         </View>
         );
     }
