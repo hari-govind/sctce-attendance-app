@@ -1,9 +1,11 @@
 import React from 'react';
 import {View, ScrollView, Text, AsyncStorage, StyleSheet,
-    StatusBar, ActivityIndicator, Dimensions} from 'react-native';
+    StatusBar, ActivityIndicator, Dimensions, FlatList} from 'react-native';
 import {getDetailsJSON} from './DataProcessor/dataProcessor.js';
 import { NavigationEvents } from 'react-navigation';
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
+import {Agenda} from 'react-native-calendars';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 export default class Detailed extends React.Component {
 
@@ -48,6 +50,13 @@ export default class Detailed extends React.Component {
         }
         this.setState({calenderData: result})
     }
+    renderSeparator = () => {
+        return (
+          <View
+            style={styles.seperator}
+          />
+        );
+    };
 
     async reloadIfNeeded() {
         try{
@@ -81,13 +90,15 @@ state = {
                         <Text>Detailed Attendance for {this.state.ActiveAccount.name}</Text>
                     </View>
                     <View>
-                    <Text>test</Text>
+                    <View style={{flex:1, paddingBottom: StatusBar.currentHeight}}>
                     <Agenda
                         style={{ width: Dimensions.get('window').width}}
                         items={this.state.calenderData}
-                        renderItem={(item) => {return ( <View style={[styles.item, {height: item.height}]}><Text>{item.text[0].Subject}{console.log(item.text[0]["Subject"])}</Text></View>);}}
+                        renderItem={this.renderCalendarItem.bind(this)}
+                        renderEmptyDate={() => {return (<View><Text>Not a working day.</Text></View>);}}
                         rowHasChanged={(r1, r2) => {return r1.text !== r2.text}}
                     />
+                    </View>
                     </View>
                     </View>
                 ) : <View><ActivityIndicator size={75} color="tomato" /><Text>Processing Data, Please Wait.</Text></View>
@@ -95,6 +106,48 @@ state = {
         </View>
         );
     }
+
+    renderIcon(status){
+        var iconName = 'ios-help-circle'
+        var tintColor = '#512DA8'
+        switch (status) {
+            case 'P':
+                iconName = 'ios-checkmark-circle'
+                tintColor = '#388E3C'
+                break
+            case 'A':
+                iconName = 'ios-close-circle'
+                tintColor = '#d32f2f'
+                break
+        }
+        return(<Ionicons name={iconName} size={25} color={tintColor} />)
+    }
+
+    renderCalendarItem(item){
+        list_data = item.text
+        //<Text>{item.text[0].Subject}{console.log(item.text[0]["Subject"])}</Text>
+        return(<View style={[styles.item, {height: item.height, flex:1}]}>
+        <FlatList
+            ItemSeparatorComponent={this.renderSeparator} 
+            data={list_data}
+            keyExtractor={item => item.ID}
+            renderItem = {({item}) =>
+            <View style={styles.data_container}>
+                 <View style={styles.data_icon}>{this.renderIcon(item.Status)}</View> 
+                 <View style={styles.data_subject_container}>
+                 <Text style={styles.subject}>{item.Subject}</Text>
+                 <Text style={styles.teacher}>{item.Teacher}</Text>
+                 </View>
+              </View>
+        }
+        />
+        </View>
+        );
+    }
+
+
+
+
 }
 
 
@@ -116,5 +169,29 @@ styles = StyleSheet.create({
         padding: 10,
         marginRight: 10,
         marginTop: 17
+    },
+    data_container: {
+        flexDirection:'row'
+    },
+    data_icon: {
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    data_subject_container: {
+        flex: 4,
+        padding:12,
+    },
+    subject: {
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
+    teacher: {
+        fontSize: 15,
+    },
+    seperator:{
+        flex: 1,
+        height: StyleSheet.hairlineWidth,
+        backgroundColor: '#8E8E8E',
     },
 })
