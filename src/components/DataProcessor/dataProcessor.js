@@ -210,6 +210,8 @@ import cheerio from 'react-native-cheerio';
                             period['Status'] = $(detailCell).text().trim();
                             if(period['Status'] == "A"){
                                 number_of_abscents++;
+                            } else if(period['Status'] == "P") {
+                                number_of_presence++;
                             }
                             break;
                         }
@@ -218,6 +220,7 @@ import cheerio from 'react-native-cheerio';
                 }
                 DaySub['Periods'] = periods;
                 DaySub['AbNumHours'] = number_of_abscents;
+                DaySub['PrNumHours'] = number_of_presence;
                 allAttendanceData.push(DaySub);
                 }
             });

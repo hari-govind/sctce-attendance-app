@@ -45,9 +45,12 @@ export default class Detailed extends React.Component {
        result = {}
        for(i=0;i<detailedJSON.length;i++){
            num_of_abscents = detailedJSON[i]["AbNumHours"]
-           dots = [{color: 'green'}]
-           if(num_of_abscents >0){
+           num_of_presence = detailedJSON[i]["PrNumHours"]
+           dots = [{color: 'red'},{color: 'orange'}]
+           if(num_of_presence == 0){
                dots = [{color: 'red'}, {color: 'red'}, {color: 'red'}]
+           } else if(num_of_abscents==0){
+                dots = [{color: 'green'}]
            }
            result[detailedJSON[i]["Date"]] = {marked: true, dots: dots}
        }
