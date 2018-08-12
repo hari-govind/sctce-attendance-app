@@ -191,6 +191,8 @@ import cheerio from 'react-native-cheerio';
                     numOfPeriods = $rowCells.length;
                     });
                 $detailCells = $detailsTableRows.children();
+                var number_of_abscents = 0;
+                var number_of_presence = 0;
                 for(var m=1;m<=numOfPeriods;m++){
                     var period = {}
                     $detailCells.filter('td:nth-child('+m+')').each(function(index, detailCell){
@@ -206,12 +208,16 @@ import cheerio from 'react-native-cheerio';
                             break;
                             case 3:
                             period['Status'] = $(detailCell).text().trim();
+                            if(period['Status'] == "A"){
+                                number_of_abscents++;
+                            }
                             break;
                         }
                     })
                     periods.push(period);   
                 }
                 DaySub['Periods'] = periods;
+                DaySub['AbNumHours'] = number_of_abscents;
                 allAttendanceData.push(DaySub);
                 }
             });

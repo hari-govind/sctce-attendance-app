@@ -39,7 +39,20 @@ export default class Detailed extends React.Component {
         }
     }
 
-    
+    async calendarMarkings() {
+       //console.log(detailedJSON.AbNumHours)
+       detailedJSON = this.state.detailed
+       result = {}
+       for(i=0;i<detailedJSON.length;i++){
+           num_of_abscents = detailedJSON[i]["AbNumHours"]
+           dots = [{color: 'green'}]
+           if(num_of_abscents >0){
+               dots = [{color: 'red'}, {color: 'red'}, {color: 'red'}]
+           }
+           result[detailedJSON[i]["Date"]] = {marked: true, dots: dots}
+       }
+       this.setState({markedDates: result})
+    }
 
     async formatCalenderData(){
         detailedJSON = this.state.detailed
@@ -54,6 +67,7 @@ export default class Detailed extends React.Component {
           result[detailedJSON[i]["Date"]] = period
         }
         this.setState({calenderData: result})
+        this.calendarMarkings()
         this.setState({startdate})
         this.setState({enddate})
         this.setState({numberofmonths})
@@ -100,6 +114,8 @@ state = {
                     <View>
                     <View style={{flex:1, paddingBottom: StatusBar.currentHeight}}>
                     <Agenda
+                        markingType={'multi-dot'} 
+                        markedDates = {this.state.markedDates}
                         pastScrollRange={this.state.numberofmonths}
                         futureScrollRange={1}
                         selected={this.state.enddate}
