@@ -127,7 +127,11 @@ state = {
                         style={{ width: Dimensions.get('window').width}}
                         items={this.state.calenderData}
                         renderItem={this.renderCalendarItem.bind(this)}
-                        renderEmptyDate={() => {return (<View/>);}}
+                        renderEmptyDate={() => {return (
+                            <View style={[styles.item, {height: item.height, flex:1}]}>
+                                <Text>No Data Entered.</Text>
+                            </View>
+                        );}}
                         renderEmptyData = {() => {return (<View />);}}
                         rowHasChanged={(r1, r2) => {return r1.text !== r2.text}}
                         theme={{
