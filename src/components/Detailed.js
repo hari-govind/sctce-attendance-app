@@ -1,6 +1,8 @@
 import React from 'react';
-import {View, ScrollView, Text, AsyncStorage} from 'react-native';
+import {View, ScrollView, Text, AsyncStorage, StyleSheet,
+    StatusBar, ActivityIndicator} from 'react-native';
 import {getDetailsJSON} from './DataProcessor/dataProcessor.js';
+import { NavigationEvents } from 'react-navigation';
 
 export default class Detailed extends React.Component {
 
@@ -54,16 +56,38 @@ state = {
 }
     render(){
         return(
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={this.isLoaded ? styles.container : styles.loadingContainer}>
+            <NavigationEvents
+            onDidFocus={() => this.reloadIfNeeded()}
+            />
             {
                 this.state.isLoaded ? (
+                    <View>
+                    <View style={{marginTop: StatusBar.currentHeight}}>
+                        <Text>Detailed Attendance for {this.state.ActiveAccount.name}</Text>
+                    </View>
                     <ScrollView>
                     <Text>{JSON.stringify(this.state.detailed)}</Text>
                     </ScrollView>
-                ) : <Text>Loading</Text>
+                    </View>
+                ) : <View><ActivityIndicator size={75} color="tomato" /><Text>Processing Data, Please Wait.</Text></View>
             }
 
         </View>
         );
     }
 }
+
+
+styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent:'center', 
+        alignItems:'center'},
+    container: {
+        flexDirection: 'column',
+        flex:1,
+        justifyContent: 'center',
+        alignItems:'center'
+    },
+})
