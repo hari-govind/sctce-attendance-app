@@ -156,6 +156,7 @@ state = {
                     <View>
                     <View style={{flex:1, paddingBottom: StatusBar.currentHeight}}>
                     <Agenda
+                        renderKnob={() => {return (<View style={styles.knob}><Text style={styles.knobText}>PULL DOWN FOR CALENDAR</Text></View>);}}
                         markingType={'multi-dot'} 
                         markedDates = {this.state.markedDates}
                         pastScrollRange={this.state.numberofmonths+1}
@@ -291,4 +292,17 @@ styles = StyleSheet.create({
         height: StyleSheet.hairlineWidth,
         backgroundColor: '#8E8E8E',
     },
+    knob: {
+        height: 12,
+        paddingLeft:10,
+        paddingRight: 10,
+        borderRadius: 20,
+        alignItems: 'center',
+        backgroundColor: '#29B6F6',
+        marginTop: 5,
+    },
+    knobText: {
+        color: 'white',
+        fontSize: 8,
+    }
 })
