@@ -61,14 +61,53 @@ export default class Detailed extends React.Component {
         detailedJSON = this.state.detailed
         startdate = detailedJSON[0].Date
         enddate = detailedJSON[detailedJSON.length - 1].Date
-        numberofmonths = Number(enddate.split("-")[1]) - Number(startdate.split("-")[1])
+        
         result = {}
+
+        //fill up all dates
+
+        Date.prototype.addDays = function(days) {
+            var date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        }
+        
+        function getDates(startDate, stopDate) {
+            var dateArray = new Array();
+            var currentDate = startDate;
+            while (currentDate <= stopDate) {
+                //convert date string to format like "2018-01-01" or yyyy-mm-dd
+                day = currentDate.getDate()
+                month = currentDate.getMonth()+1
+                if (day.toString().length == 1){
+                    day = `0${day}`
+                }
+                if (month.toString().length == 1){
+                    month = `0${month}`
+                }
+                date_string = `${currentDate.getFullYear()}-${month}-${day}`
+                dateArray.push(date_string);
+                currentDate = currentDate.addDays(1);
+            }
+            return dateArray;
+        }
+
+        dates = getDates(new Date(startdate), new Date(enddate))
+        for(i=0;i<dates.length;i++){
+            result[dates[i]] = [{text:[{Status:'NW',Subject:'Data Not Entered', Teacher:'This is probably a holiday.',ID:'0'}]}]
+        }
+
+        //end of fill up all dates
+
+
+        numberofmonths = Number(enddate.split("-")[1]) - Number(startdate.split("-")[1])
         for(i=0;i<detailedJSON.length;i++){
           period = []
           periods = detailedJSON[i]["Periods"]
           period.push({text: periods})
           result[detailedJSON[i]["Date"]] = period
         }
+        console.log(result)
         this.setState({calenderData: result})
         this.calendarMarkings()
         this.setState({startdate})
@@ -112,7 +151,7 @@ state = {
                 this.state.isLoaded ? (
                     <View style={{flex:1}}>
                     <View style={{marginTop: StatusBar.currentHeight}}>
-                        <Text>Detailed Attendance for {this.state.ActiveAccount.name}</Text>
+                        <Text style={{textAlign: 'center', color:'tomato',fontWeight:'bold'}}>{this.state.ActiveAccount.name}</Text>
                     </View>
                     <View>
                     <View style={{flex:1, paddingBottom: StatusBar.currentHeight}}>
@@ -132,7 +171,11 @@ state = {
                                 <Text>No Data Entered.</Text>
                             </View>
                         );}}
-                        renderEmptyData = {() => {return (<View />);}}
+                        renderEmptyData = {() => {return (
+                            <View style={[styles.item, {flex:1}]}>
+                                <Text>No Data Entered.</Text>
+                            </View>
+                        );}}
                         rowHasChanged={(r1, r2) => {return r1.text !== r2.text}}
                         theme={{
                             'stylesheet.day.multiDot' : {
@@ -168,6 +211,10 @@ state = {
             case 'A':
                 iconName = 'ios-close-circle'
                 tintColor = '#d32f2f'
+                break
+            case 'NW':
+                iconName = 'md-bicycle'
+                tintColor = '#FB8C00'
                 break
         }
         return(<Ionicons name={iconName} size={25} color={tintColor} />)
