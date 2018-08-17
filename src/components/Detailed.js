@@ -13,12 +13,15 @@ export default class Detailed extends React.Component {
         this.setState({error: false})
         try{
             this.setState({isLoaded: false})
+            this.setState({LoadingStatus: 'Downloading Attendance Data. Please Wait.'})
             this.setState({ActiveAccount: (JSON.parse(await AsyncStorage.getItem('ActiveAccount')))})
             ActiveAccount = this.state.ActiveAccount
             this.setState({hasActiveRecord: true})
+            //binding this to reactThis to be used inside function block
             reactThis = this
            getDetailsJSON(ActiveAccount.reg_no,ActiveAccount.password)
             .then(function(data) {
+                reactThis.setState({LoadingStatus: 'Processing Downloaded Data. Please Wait.'})
                 return data;
             })
             .then(function(details){
@@ -40,7 +43,6 @@ export default class Detailed extends React.Component {
     }
 
     async calendarMarkings() {
-       //console.log(detailedJSON.AbNumHours)
        detailedJSON = this.state.detailed
        result = {}
        for(i=0;i<detailedJSON.length;i++){
@@ -107,7 +109,6 @@ export default class Detailed extends React.Component {
           period.push({text: periods})
           result[detailedJSON[i]["Date"]] = period
         }
-        console.log(result)
         this.setState({calenderData: result})
         this.calendarMarkings()
         this.setState({startdate})
@@ -195,7 +196,7 @@ state = {
                     </View>
                     </View>
                     </View>
-                ) : <View><ActivityIndicator size={75} color="tomato" /><Text>Processing Data, Please Wait.</Text></View>
+                ) : <View><ActivityIndicator size={75} color="tomato" /><Text>{this.state.LoadingStatus}</Text></View>
             }
         </View>
         );
@@ -223,7 +224,6 @@ state = {
 
     renderCalendarItem(item){
         list_data = item.text
-        //<Text>{item.text[0].Subject}{console.log(item.text[0]["Subject"])}</Text>
         return(<View style={[styles.item, {height: item.height, flex:1}]}>
         <FlatList
             ItemSeparatorComponent={this.renderSeparator}
