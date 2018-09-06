@@ -25,7 +25,29 @@ import cheerio from 'react-native-cheerio';
         })
     }
 
-
+    export async function isValidLogin(username,password){
+        return new Promise((resolve, reject) => {
+            controller.getResponseHTML(username,password)
+            .then((content) => {
+                /**
+                 * <META HTTP-EQUIV="Refresh" Content="0; URL=logout.php">
+                 * is the login error response
+                 */
+                console.log(content)
+                if (content.startsWith('<META HTTP-EQUIV="Refresh" Content="0; URL=logout.php">')){
+                    resolve(false)
+                } else if(content == 'Error'){
+                    resolve('connection_error')
+                } else {
+                    resolve(true)
+                }
+            })
+            .catch((err) => {
+                resolve('connection_error')
+                console.log(err)
+            })
+        })
+    }
 
     var controller = {
         getAttendanceHTML: async function(username,password){
@@ -170,6 +192,25 @@ import cheerio from 'react-native-cheerio';
                     resolve(html)
                 })
               });
+            })
+        },
+        getResponseHTML: function(username, password){
+            return new Promise((resolve, reject) => {
+                fetch('http://www.campusoftonline.com/atten/checklogin.php', {method: 'POST',
+                body:`userid=${username}&mypassword=${password}&submit=Login`, headers: {
+                    Connection: 'keep-alive',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+                })
+                .then(function(data){
+                    return data.text()
+                })
+                .then(function(html){
+                    resolve(html)
+                })
+                .catch((err) => {
+                    resolve('Error')
+                })
             })
         },
         getDetailedAttendance: function(content){
