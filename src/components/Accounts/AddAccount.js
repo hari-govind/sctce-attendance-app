@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, ScrollView, StyleSheet, TextInput, KeyboardAvoidingView,
-    Button, Alert,AsyncStorage} from 'react-native';
+    Button, Alert,AsyncStorage, Modal, ActivityIndicator} from 'react-native';
+ import {isValidLogin} from '../DataProcessor/dataProcessor.js';
 
 export default class AddAccount extends React.Component {
     static navigationOptions = {
@@ -11,10 +12,26 @@ export default class AddAccount extends React.Component {
 		register_number: '',
         password: '',
         processing: false,
+        showLoginLoading: false,
+        isChecking: false,
 	}
     render(){
         return(
             <ScrollView>
+                <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.isChecking}
+                    onRequestClose={() => {
+                        alert('Close ?','This window will be closed and the account might not be added.');
+                      }}
+                >
+                <View style={{flex: 1,
+                    justifyContent:'center', 
+                    alignItems:'center', marginTop: 22}}>
+                <ActivityIndicator size={75} color="tomato" /><Text>Checking login, please wait.</Text>
+                </View>
+                </Modal>
                 <View style={styles.container}>
                     <Text style={styles.info}>
                     Save your and your friends' login for quick access to attendance data.
@@ -50,7 +67,7 @@ export default class AddAccount extends React.Component {
                                 value={this.state.password}
                                 ref = {(input) => this.passwordInput = input}
                                 onSubmitEditing={() => {
-                                    controller.addAccount(this.state.name, this.state.register_number, this.state.password)
+                                    controller.addIfValid(this.state.name, this.state.register_number, this.state.password,this)
                                     this.state.name = ""
                                     this.state.register_number = ""
                                     this.state.password = ""
@@ -62,7 +79,7 @@ export default class AddAccount extends React.Component {
                             title="Add Account"
                             accessibilityLabel="Add account with the above details."
                             onPress={() => {
-                                controller.addAccount(this.state.name, this.state.register_number, this.state.password);
+                                controller.addIfValid(this.state.name, this.state.register_number, this.state.password,this);
                                 this.state.name = ""
                                 this.state.register_number = ""
                                 this.state.password = ""
@@ -111,7 +128,6 @@ const styles = StyleSheet.create({
 
 var controller = {
     addAccount: async function(name,reg_no, password){
-        if(!(name == '' || password == '' || reg_no == '')){
         user_data = {name, reg_no, password};
         user_data['key'] = reg_no;
         const value = await AsyncStorage.getItem('ACCOUNTS');
@@ -134,8 +150,21 @@ var controller = {
             }
             
         }
-    } else {
-        Alert.alert('Fields cannot be empty!')
-    }
+    },
+    addIfValid: async function (name,reg_no,password,this_ref){
+        if(!(name == '' || password == '' || reg_no == '')){
+            this_ref.setState({isChecking: true})
+            loginResponse = await isValidLogin(reg_no,password)
+            this_ref.setState({isChecking:false})
+            if(loginResponse===true){
+                controller.addAccount(name, reg_no,password)
+            } else if(loginResponse===false){
+                Alert.alert('Login Error', 'The register number or password you entered is incorrect.')
+            } else {
+                Alert.alert('Network Error', 'Please check if you have an active internet connection.')
+            }
+        } else {
+            Alert.alert('Fields cannot be empty!')
+        }
     }
 };
