@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, ScrollView, StyleSheet, TextInput, KeyboardAvoidingView,
-    Button, Alert,AsyncStorage, ToastAndroid} from 'react-native';
+    Button, Alert,AsyncStorage, ToastAndroid, Modal, ActivityIndicator} from 'react-native';
+import {isValidLogin} from '../DataProcessor/dataProcessor.js';
 
 export default class ModifyAccount extends React.Component {
     static navigationOptions = {
@@ -14,10 +15,25 @@ export default class ModifyAccount extends React.Component {
 		register_number: this.props.navigation.getParam('key', 'nokey'),
         password: this.props.navigation.getParam('password', 'nopassword'),
         processing: false,
+        isChecking:false,
 	}
     render(){
         return(
             <ScrollView>
+                <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.isChecking}
+                    onRequestClose={() => {
+                        alert('Close ?','This window will be closed and the account might not be added.');
+                      }}
+                >
+                <View style={{flex: 1,
+                    justifyContent:'center', 
+                    alignItems:'center', marginTop: 22}}>
+                <ActivityIndicator size={75} color="tomato" /><Text>Checking login, please wait.</Text>
+                </View>
+                </Modal>
                 <View style={styles.container}>
                     <Text style={styles.info}>
                         Modify necessary fields and tap the save button.
@@ -52,7 +68,7 @@ export default class ModifyAccount extends React.Component {
                                 ref = {(input) => this.passwordInput = input}
                                 value={this.state.password}
                                 onSubmitEditing={() => 
-                                    controller.modifyAccount(this.state.name, this.state.register_number, this.state.password, this.state.original_key,this.props.navigation)
+                                    controller.modifyIfValid(this.state.name, this.state.register_number, this.state.password, this.state.original_key,this.props.navigation,this)
                                 }
                                     />
                             <View style={{flexDirection:'row', justifyContent: 'space-around'}}>
@@ -60,7 +76,7 @@ export default class ModifyAccount extends React.Component {
                             title="Save"
                             accessibilityLabel="Modify account with the above details."
                             onPress={() => {
-                                controller.modifyAccount(this.state.name, this.state.register_number, this.state.password, this.state.original_key,this.props.navigation);
+                                controller.modifyIfValid(this.state.name, this.state.register_number, this.state.password, this.state.original_key,this.props.navigation,this);
                               }}
                             color="tomato"
                             />
@@ -105,7 +121,6 @@ const styles = StyleSheet.create({
 
 var controller = {
     modifyAccount: async function(name,reg_no, password, original_key,navigation){
-        if(!(name == '' || password == '' || reg_no == '')){
         user_data = {name, reg_no, password};
         user_data['key'] = reg_no;
         const value = await AsyncStorage.getItem('ACCOUNTS');
@@ -130,7 +145,19 @@ var controller = {
             Alert.alert(`Register number ${reg_no} already in use for ${pre_existing.name}`);
             }
             
-        
+    },
+    modifyIfValid: async function(name,reg_no, password, original_key,navigation, this_ref) {
+        if(!(name == '' || password == '' || reg_no == '')){
+            this_ref.setState({isChecking: true})
+            loginResponse = await isValidLogin(reg_no,password)
+            this_ref.setState({isChecking:false})
+            if(loginResponse===true){
+                controller.modifyAccount(name, reg_no,password, original_key,navigation)
+            } else if(loginResponse===false){
+                Alert.alert('Login Error', 'The register number or password you entered is incorrect.')
+            } else {
+                Alert.alert('Network Error', 'Please check if you have an active internet connection.')
+            }
     } else {
         Alert.alert('Fields cannot be empty!')
     }
