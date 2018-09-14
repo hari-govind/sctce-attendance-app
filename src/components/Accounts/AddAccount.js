@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         marginBottom: 20,
-        color: 'tomato'
+        color: 'tomato',
     },
     buttonContainer: {
         backgroundColor: '#1565C0',
@@ -159,7 +159,7 @@ var controller = {
             if(loginResponse===true){
                 controller.addAccount(name, reg_no,password)
             } else if(loginResponse===false){
-                Alert.alert('Login Error', 'The register number or password you entered is incorrect.')
+                Alert.alert('Login Error', 'The register number or password you entered is incorrect. CampusSoft reset passwords every new semester, so if you have not already chosen a new password for this sem, kindly do so by logging in using your register number as username and password in CampusSoft.')
             } else {
                 Alert.alert('Network Error', 'Please check if you have an active internet connection.')
             }
