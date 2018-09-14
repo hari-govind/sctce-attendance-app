@@ -3,7 +3,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Text, View } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 import Summary from './components/Summary';
-import Library from './components/Library';
+import About from './components/About';
 import Detailed from './components/Detailed';
 import Accounts from './components/Accounts';
 
@@ -19,7 +19,7 @@ export default createBottomTabNavigator(
       Accounts: Accounts,  
       Summary: Summary,
       Detailed: Detailed,
-      Library: Library,
+      About: About,
     },
     {
       navigationOptions: ({ navigation }) => ({
@@ -32,7 +32,7 @@ export default createBottomTabNavigator(
             iconName = `md-clipboard${focused ? '' : ''}`;
           } else if (routeName === 'Detailed') {
             iconName = `md-trending-up${focused ? '' : ''}`;
-          } else if (routeName === 'Library') {
+          } else if (routeName === 'About') {
             iconName = `md-book${focused ? '' : ''}`;
           }
   
