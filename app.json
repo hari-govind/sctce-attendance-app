@@ -4,9 +4,9 @@
     "slug": "sctce-attendance",
     "sdkVersion": "27.0.0",
     "orientation": "portrait",
-    "icon":"./src/images/icon.jpg",
+    "icon":"./src/images/icon.png",
     "splash": {
-      "image": "./src/images/logo.jpg"
+      "image": "./src/images/logo.png"
     }
   }
 }
