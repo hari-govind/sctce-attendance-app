@@ -38,7 +38,7 @@ export default class About extends React.Component {
                   > hello@harigovind.org
                   </Text>
                   </Text>
-                  <Text style={{textAlign: 'center'}}>Developed by Hari Govind S</Text>
+                  <Text style={{textAlign: 'center',color:'gray'}}>Developed by Hari Govind S</Text>
             </View>
 
             </ScrollView>

@@ -180,12 +180,15 @@ const styles = StyleSheet.create({
     loadingContainer: {
         flex: 1,
         justifyContent:'center', 
-        alignItems:'center'},
+        alignItems:'center',
+        backgroundColor: 'white'
+    },
     container: {
         flexDirection: 'column',
         flex:1,
         justifyContent: 'center',
-        alignItems:'center'
+        alignItems:'center',
+        backgroundColor: 'white'
     },
     student_info: {
         marginTop: StatusBar.currentHeight,

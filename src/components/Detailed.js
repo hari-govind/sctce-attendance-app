@@ -252,6 +252,7 @@ state = {
 styles = StyleSheet.create({
     loadingContainer: {
         flex: 1,
+        backgroundColor: 'white',
         justifyContent:'center', 
         alignItems:'center'},
     container: {
