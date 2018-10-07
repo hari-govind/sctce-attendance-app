@@ -1,12 +1,17 @@
 {
   "expo": {
     "name": "SCTCE",
+    "version": "0.1.2",
     "slug": "sctce-attendance",
     "sdkVersion": "27.0.0",
     "orientation": "portrait",
     "icon":"./src/images/icon.png",
+    "android": {
+      "package": "org.harigovind.sctce"
+    },
     "splash": {
-      "image": "./src/images/logo.png"
+        "image":"./src/images/logo.png",
+        "resizeMode":"contain"
+        }
     }
-  }
 }
