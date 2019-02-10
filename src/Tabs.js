@@ -1,7 +1,7 @@
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Text, View } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import Summary from './components/Summary';
 import About from './components/About';
 import Detailed from './components/Detailed';
@@ -14,7 +14,8 @@ export default class Tabs extends React.Component{
     };
 }*/
 
-export default createBottomTabNavigator(
+//export default createBottomTabNavigator(
+const TabNavigator = createBottomTabNavigator(
     {
       Accounts: Accounts,  
       Summary: Summary,
@@ -31,9 +32,9 @@ export default createBottomTabNavigator(
           } else if (routeName === 'Summary') {
             iconName = `md-clipboard${focused ? '' : ''}`;
           } else if (routeName === 'Detailed') {
-            iconName = `md-trending-up${focused ? '' : ''}`;
+            iconName = `trending-up${focused ? '' : ''}`;
           } else if (routeName === 'About') {
-            iconName = `md-book${focused ? '' : ''}`;
+            iconName = `book${focused ? '' : ''}`;
           }
   
           
@@ -46,3 +47,5 @@ export default createBottomTabNavigator(
       },
     }
   );
+
+  export default createAppContainer(TabNavigator);

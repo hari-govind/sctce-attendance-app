@@ -6,7 +6,7 @@ import AddAccount from './Accounts/AddAccount';
 import SelectAccount from './Accounts/SelectAccount';
 import ManageAccounts from './Accounts/ManageAccounts';
 import ModifyAccount from './Accounts/ModifyAccount';
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 
 export default class Accounts extends React.Component {
@@ -73,7 +73,7 @@ class AccountsHome extends React.Component{
 
 
 
-const RootStack = createStackNavigator({
+const RootStackNavigator = createStackNavigator({
     AccountsHome: {
       screen: AccountsHome,
     },
@@ -96,6 +96,7 @@ const RootStack = createStackNavigator({
     }
     );
 
+const RootStack = createAppContainer(RootStackNavigator);
 
 const styles = StyleSheet.create({
     container: {
