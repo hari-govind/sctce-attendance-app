@@ -1,6 +1,11 @@
-An android application using React Native for viewing attendance data.
+An Android application for SCTCE students to view their attendance data.
 
 # SCTCE Unofficial Attendance App
+
+## Preview
+
+![](https://github.com/hari-govind/sctce/blob/master/github_assets/app_preview.gif?raw=true)
+
 
 ## How it works
 - Using the provided user login, the app scrapes attendance details from the official SCTCE attendance application(CampusSoft).
