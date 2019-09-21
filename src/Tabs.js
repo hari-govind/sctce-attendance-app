@@ -1,7 +1,8 @@
 import React from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 import Summary from './components/Summary';
 import About from './components/About';
 import Detailed from './components/Detailed';
@@ -44,6 +45,7 @@ const TabNavigator = createBottomTabNavigator(
       tabBarOptions: {
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
+        showIcon: true,
       },
     }
   );
