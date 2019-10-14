@@ -24,7 +24,7 @@ const TabNavigator = createBottomTabNavigator(
       About: About,
     },
     {
-      navigationOptions: ({ navigation }) => ({
+      defaultNavigationOptions: ({ navigation }) => ({
         tabBarIcon: ({ focused, tintColor }) => {
           const { routeName } = navigation.state;
           let iconName;
@@ -33,9 +33,9 @@ const TabNavigator = createBottomTabNavigator(
           } else if (routeName === 'Summary') {
             iconName = `md-clipboard${focused ? '' : ''}`;
           } else if (routeName === 'Detailed') {
-            iconName = `trending-up${focused ? '' : ''}`;
+            iconName = `md-trending-up${focused ? '' : ''}`;
           } else if (routeName === 'About') {
-            iconName = `book${focused ? '' : ''}`;
+            iconName = `md-book${focused ? '' : ''}`;
           }
   
           
