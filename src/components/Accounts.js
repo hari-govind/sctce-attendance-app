@@ -1,12 +1,13 @@
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {View, Text, Image, FlatList, StyleSheet, TouchableNativeFeedback} from 'react-native';
-import { Font } from 'expo';
+import * as Font from 'expo-font';
 import AddAccount from './Accounts/AddAccount';
 import SelectAccount from './Accounts/SelectAccount';
 import ManageAccounts from './Accounts/ManageAccounts';
 import ModifyAccount from './Accounts/ModifyAccount';
-import { createStackNavigator } from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 
 export default class Accounts extends React.Component {
@@ -73,7 +74,7 @@ class AccountsHome extends React.Component{
 
 
 
-const RootStack = createStackNavigator({
+const RootStackNavigator = createStackNavigator({
     AccountsHome: {
       screen: AccountsHome,
     },
@@ -96,6 +97,7 @@ const RootStack = createStackNavigator({
     }
     );
 
+const RootStack = createAppContainer(RootStackNavigator);
 
 const styles = StyleSheet.create({
     container: {
