@@ -25,27 +25,6 @@ export async function getDetailsJSON(username, password) {
     })
 }
 
-/* export async function isValidLogin(username, password) {
-    return new Promise((resolve, reject) => {
-        controller.getResponseHTML(username, password)
-            .then((content) => {
-               
-                console.log(content)
-                if (content.startsWith('<META HTTP-EQUIV="Refresh" Content="0; URL=logout.php">')) {
-                    resolve(false)
-                } else if (content == 'Error') {
-                    resolve('connection_error')
-                } else {
-                    resolve(true)
-                }
-            })
-            .catch((err) => {
-                resolve('connection_error')
-                console.log(err)
-            })
-    })
-} */
-
 export async function isValidLogin(username, password) {
     return new Promise((resolve, reject) => {
         RCTNetworking.clearCookies(() => { });
