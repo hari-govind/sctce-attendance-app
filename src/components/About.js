@@ -22,23 +22,47 @@ export default class About extends React.Component {
                 <Text style={styles.caption}>View your attendance in a mobile friendly manner.</Text>
                 <Text style={styles.heading}>How to use</Text>
                 <Text style={styles.caption}>On the Accounts tab, choose <Text style={{fontWeight: 'bold'}}>Add Account</Text> option and add your
-                CampusSoft attendance login register number and password. Once the account is added, it can be
+                Etlab attendance login register number and password. Once the account is added, it can be
                  chosen from the <Text style={{fontWeight: 'bold'}}>Select Accounts</Text> menu. Select your added account and use the tabs <Text style={{fontWeight: 'bold'}}>Summary</Text> and <Text style={{fontWeight: 'bold'}}>Detailed</Text>,
                  to view the attendance summary and detailed attendance respectively.</Text>
                  <Text style={styles.heading}>How it works</Text>
                  <Text style={styles.caption}>The register number and password are stored in your device. 
-                 To gather attendance data, the app will send your username and password to CampusSoft and will
+                 To gather attendance data, the app will send your username and password to Etlab and will
                  retrieve your attendance data in HTML format. This data is then converted into a mobile friendly format
                  and shown to you.</Text>
                  <Text style={styles.heading}>Bugs and Feedback</Text>
-                 <Text style={styles.caption}>Suggestions and bug reports can be mailed to me directly at 
+                 <Text style={styles.caption}>Bugs can be reported by opening an issue on our GitHub repo: </Text>
+                 <Text
+                  style={{color:'cornflowerblue'}}
+                  onPress={() => Linking.openURL('https://github.com/hari-govind/sctce-attendance-app/issues')}
+                  > https://github.com/hari-govind/sctce-attendance-app/issues
+                  </Text>
+                 
+                 <Text style={styles.caption}>Suggestions can also be mailed to me directly at</Text>
                   <Text
-                  style={{color:'blue'}}
+                  style={{color:'cornflowerblue'}}
                   onPress={() => Linking.openURL('mailto:hello@harigovind.org?Subject=SCTCE%20Application%20Feedback')}
-                  > hello@harigovind.org
+                  > hello@harigovind.org 
                   </Text>
+                  <Text style={styles.caption}>
+                    Help us develop better by taking this single question survey:
                   </Text>
-                  <Text style={{textAlign: 'center',color:'gray'}}>Developed by Hari Govind S</Text>
+                  <Text
+                  style={{color:'cornflowerblue'}}
+                  onPress={() => Linking.openURL('https://poll.disroot.org/QXse96QMyAeOPIKW')}
+                  > Survey Link
+                  </Text>
+                  <Text style={styles.heading}>License and Source</Text>
+                  <Text style={styles.caption}>
+                    SCTCE Unofficial Attendance app is a free/libre software licensed under GPL v3.0, which means that you have the freedom to run, copy, distribute, study, change and improve the software.
+                    The source code and license terms can be found here:
+                  </Text>
+                  <Text
+                  style={{color:'cornflowerblue'}}
+                  onPress={() => Linking.openURL('https://github.com/hari-govind/sctce-attendance-app')}
+                  >https://github.com/hari-govind/sctce-attendance-app
+                  </Text>
+                  <Text style={{textAlign: 'center',color:'gray'}}>Developed by Hari Govind S and contributors.</Text>
             </View>
 
             </ScrollView>
