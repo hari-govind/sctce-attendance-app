@@ -5,7 +5,6 @@ export async function getSummaryJSON(username, password) {
     return new Promise((resolve, reject) => {
         controller.getAttendance(username, password)
             .then((data) => {
-                console.log(data);
                 resolve(data);
             })
             .catch((err) => {
@@ -217,7 +216,6 @@ var controller = {
                             Student['Branch'] = $("table td:nth-child(1)").text().trim()
                             Student['RollNumber'] = $("table td:nth-child(2)").text().trim()
                             data = { Student: Student, Overall: Overall }
-                            console.log(data);
                             resolve(data);
                         })
                 })

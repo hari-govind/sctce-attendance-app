@@ -112,7 +112,7 @@ export default class Summary extends React.Component {
           bounce
           repeatSpacer={50}
           marqueeDelay={1000}
-          >{`${this.state.summary.Student.Name} 🖊 ${this.state.summary.Student.Branch} 🖊 ${this.state.summary.Student.RollNo}`}
+          >{`${this.state.summary.Student.Name} 🖊 ${this.state.summary.Student.Branch} 🖊 ${this.state.summary.Student.RollNumber}`}
           </TextTicker>
           </View>
           <View style={styles.header_details}>
