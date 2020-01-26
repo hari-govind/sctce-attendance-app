@@ -3,9 +3,9 @@ const RCTNetworking = require('RCTNetworking');
 
 export async function getSummaryJSON(username, password) {
     return new Promise((resolve, reject) => {
-        controller.getAttendanceHTML(username, password)
-            .then((content) => {
-                var data = controller.getAttendanceData(content);
+        controller.getAttendance(username, password)
+            .then((data) => {
+                console.log(data);
                 resolve(data);
             })
             .catch((err) => {
@@ -26,8 +26,8 @@ export async function getDetailsJSON(username, password) {
 }
 
 export async function isValidLogin(username, password) {
+    RCTNetworking.clearCookies(() => { });
     return new Promise((resolve, reject) => {
-        RCTNetworking.clearCookies(() => { });
         controller.isValidLogin(username, password)
             .then((result) => {
                 resolve(result);
@@ -99,89 +99,145 @@ var controller = {
                 .catch(error => { reject(error) });
         })
     },
-    getAttendanceHTML: async function (username, password) {
+    getAttendanceHTML: async function (registerNumber, password) {
+        RCTNetworking.clearCookies(() => { });
         return new Promise((resolve, reject) => {
-            fetch('http://www.campusoftonline.com/atten/checklogin.php', {
-                method: 'POST',
-                body: `userid=${username}&mypassword=${password}&submit=Login`, headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': 0,
-                }
-            })
-                .then(function (response) {
-                    try {
-                        return response.headers.get('set-cookie').split(';')[0];
-                    } catch (err) {
-                        return null
-                    }
-                })
-                .then(function (myJson) {
-                    fetch('http://www.campusoftonline.com/atten/attendance/student_search2.php?submit=Attendance+Summery',
-                        {
-                            method: 'GET', headers: {
-                                Cookie: myJson,
-                                Referer: 'http://www.campusoftonline.com/atten/attendance/student_search2.php',
-                                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0',
-                                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                                'Accept-Language': 'en-US,en;q=0.5',
-                                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                                'Pragma': 'no-cache',
-                                'Expires': 0,
+            controller.getAuthorizationCookie(registerNumber, password)
+                .then((cookie) => {
+                    fetch('https://sctce.etlab.in/student/results', {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            Host: 'sctce.etlab.in',
+                        }
+                    })
+                        .then((result) => {
+                            return result.text();
+                        })
+                        .then(attendancePage => {
+                            let $ = cheerio.load(attendancePage);
+                            return $(".widget-box:nth-child(4) .widget-content > div:nth-child(3)").html();
+                        })
+                        .then((attendanceTable) => {
+                            resolve(attendanceTable);
+                        })
 
-                            }
-                        })
-                        .then(function (data) {
-                            return data.text()
-                        })
-                        .then(function (html) {
-                            resolve(html)
-                        })
-                });
+                })
+                .catch(error => reject(error))
         })
     },
-    getAttendanceData: function (html) {
-        var $ = cheerio.load(html);
-        let data = {};
-        let summary_data = [];
-        let overall_data = [];
-        $("table tr").each(function () {
-            $currentRow = $(this);
-            var subject = $currentRow.first().children().first().text().trim();
-            var percentage = $currentRow.first().children().last().text().trim();
-            var pattern = new RegExp(/^Attendance Details of (.*)$/);
-            var matched = subject.match(pattern);
-            if (!matched) {
-                if (subject != "") {
-                    var subject_pattern = new RegExp(/^Attendance percentage for (.*)$/);
-                    matched_subject = subject.match(subject_pattern)
-                    if (matched_subject) {
-                        subject_name = matched_subject[1]
-                        if (percentage >= "85%" || percentage === "100%") {
-                            status = "Excellent"
-                        } else if (percentage >= "75%") {
-                            status = "Good"
-                        } else {
-                            status = "Try to improve"
-                        }
-                        summary_data.push({ "subject": subject_name, "percentage": percentage, "status": status })
-                    } else {
-                        overall_data.push({ key: subject, 'percentage': percentage })
+    getAttendanceJSON: async function (html) {
+        return new Promise((resolve, reject) => {
+            data = {};
+            attendanceSubjects = [];
+            let $ = cheerio.load(html);
+            rows = $("table").find("tr");
+            rows.each((i, row) => {
+                if (!(($(row).children("td:nth-child(3)").text().trim() == 'N/A') || ($(row).children("td:nth-child(1)").text().trim() == "") || ($(row).children("td:nth-child(1)").text().trim() == "Subject Code"))) {
+                    let attendance = {
+                        subjectCode: $(row).children("td:nth-child(1)").text().trim(),
+                        subject: $(row).children("td:nth-child(2)").text().trim(), //subjectName
+                        percentage: $(row).children("td:nth-child(4)").text().trim(),
+                        totalClass: Number($(row).children("td:nth-child(3)").text().trim().split('/')[1]),
+                        totalPresent: Number($(row).children("td:nth-child(3)").text().trim().split('/')[0])
                     }
+                    toAttend = Math.ceil(((attendance['totalClass'] * 0.75) - attendance['totalPresent']) / 0.25);
+                    if (toAttend > 0) {
+                        if (toAttend > 1)
+                            attendance['calculatedClass'] = `Need to attend next ${toAttend} classes.`;
+                        else
+                            attendance['calculatedClass'] = "Need to attend the next class.";
+                    } else if (toAttend === 0) {
+                        attendance['calculatedClass'] = "Perfectly balanced, but you can't miss next class.";
+                    } else {
+                        canMiss = Math.floor((attendance['totalPresent'] - 0.75 * attendance['totalClass']) / 0.75);
+                        if (canMiss > 1)
+                            attendance['status'] = `You can cut next ${canMiss} classes.`;
+                        else
+                            attendance['status'] = "You can cut the next class";
+                    }
+                    percentage = attendance['percentage'];
+                    if (percentage >= "85%" || percentage === "100%") {
+                        attendance['status'] = "Excellent";
+                    } else if (percentage >= "75%") {
+                        attendance['status'] = "Good";
+                    } else {
+                        attendance['status'] = "Try to improve";
+                    }
+                    attendanceSubjects.push(attendance);
                 }
-            } else {
-                student_details_array = matched[1].split(',');
-                student_details = {};
-                student_details['Name'] = student_details_array[0];
-                student_details['Branch'] = student_details_array[2];
-                student_details['RollNo'] = student_details_array[3].split('-')[1];
-                data['Student'] = student_details;
-            }
-            data['Summary'] = summary_data;
-            data['Overall'] = overall_data;
-        });
-        return data;
+                data['Summary'] = attendanceSubjects;
+            })
+            resolve(data);
+        })
+    },
+    getStudentData: async function (username, password) {
+        return new Promise((resolve, reject) => {
+            controller.getAuthorizationCookie(username, password)
+                .then((cookie) => {
+                    fetch('https://sctce.etlab.in/ktuacademics/student/viewattendancesubjectdutyleave/20',
+                        {
+                            method: 'GET',
+                            credentials: 'include',
+                            headers: {
+                                Host: 'sctce.etlab.in'
+                            }
+                        },
+                    )
+                        .then((response) => {
+                            return response.text();
+                        })
+                        .then((html) => {
+                            let $ = cheerio.load(html);
+                            topicIndex = {};
+                            $("table th").each((index, heading) => {
+                                index = index + 1;
+                                switch ($(heading).text().trim()) {
+                                    case ("Duty Leave"):
+                                        topicIndex['Duty Leave Hours'] = index;
+                                        break;
+                                    case ("Percentage"):
+                                        topicIndex['Overall Attendance'] = index;
+                                        break;
+                                    case ("Duty Leave Percentage"):
+                                        topicIndex['Duty Leave Percentage'] = index;
+                                        break;
+                                }
+                            })
+                            Overall = [];
+                            for (const [key, value] of Object.entries
+                                (topicIndex)) {
+                                currentOverall = {};
+                                currentOverall['key'] = key;
+                                currentOverall['percentage'] = $(`table td:nth-child(${value})`).text().trim();
+                                Overall.push(currentOverall);
+                            }
+                            Student = {}
+                            Student['Name'] = $("table td:nth-child(3)").text().trim()
+                            Student['Branch'] = $("table td:nth-child(1)").text().trim()
+                            Student['RollNumber'] = $("table td:nth-child(2)").text().trim()
+                            data = { Student: Student, Overall: Overall }
+                            console.log(data);
+                            resolve(data);
+                        })
+                })
+        })
+    },
+    getAttendance: async function (username, password) {
+        return new Promise((resolve, reject) => {
+            controller.getAttendanceHTML(username, password)
+                .then((html) => { return controller.getAttendanceJSON(html) })
+                .then(attendanceJSON => { return attendanceJSON })
+                .then((attendance) => {
+                    controller.getStudentData(username, password)
+                        .then((studentData) => {
+                            attendance['Student'] = studentData['Student'];
+                            attendance['Overall'] = studentData['Overall'];
+                            resolve(attendance);
+                        })
+                })
+                .catch(error => { reject(error) })
+        })
     },
     getHTML: async function (url) {
         return new Promise((resolve, reject) => {
