@@ -151,9 +151,9 @@ var controller = {
                     } else {
                         canMiss = Math.floor((attendance['totalPresent'] - 0.75 * attendance['totalClass']) / 0.75);
                         if (canMiss > 1)
-                            attendance['status'] = `You can cut next ${canMiss} classes.`;
+                            attendance['status'] = `You can miss next ${canMiss} classes.`;
                         else
-                            attendance['status'] = "You can cut the next class";
+                            attendance['status'] = "You can miss the next class";
                     }
                     percentage = attendance['percentage'];
                     if (percentage >= "85%" || percentage === "100%") {
