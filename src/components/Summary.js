@@ -112,7 +112,7 @@ export default class Summary extends React.Component {
           bounce
           repeatSpacer={50}
           marqueeDelay={1000}
-          >{`${this.state.summary.Student.Name} 🖊 ${this.state.summary.Student.Branch} 🖊 ${this.state.summary.Student.RollNo}`}
+          >{`${this.state.summary.Student.Name} 🖊 ${this.state.summary.Student.Branch} 🖊 ${this.state.summary.Student.RollNumber}`}
           </TextTicker>
           </View>
           <View style={styles.header_details}>
@@ -155,7 +155,10 @@ export default class Summary extends React.Component {
                  <View style={styles.data_icon}>{this.renderIcon(item.status)}</View> 
                  <View style={styles.data_subject_container}>
                  <Text style={styles.subject}>{item.subject}</Text>
-                 <Text style={styles.percentage}>{item.percentage}</Text>
+                <Text>{item.calculatedClass}</Text>
+                 </View>
+                 <View style={styles.data_icon}>
+                    <Text style={styles.percentage}>{item.percentage}</Text>
                  </View>
               </View>
         }
@@ -254,11 +257,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#8E8E8E',
     },
     subject: {
-        fontSize: 15
+        fontSize: 15,
+        fontWeight: 'bold',
+        opacity:0.78
     },
     percentage: {
         fontSize: 15,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        opacity: 0.85
     },
     input: {
         flex: 1,

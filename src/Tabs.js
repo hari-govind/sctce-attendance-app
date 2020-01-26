@@ -19,7 +19,7 @@ const TabNavigator = createBottomTabNavigator(
     {
       Accounts: Accounts,  
       Summary: Summary,
-      Detailed: Detailed,
+      //Detailed: Detailed, //To be re-implemented later
       About: About,
     },
     {
