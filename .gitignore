@@ -2,7 +2,7 @@
 
 # expo
 .expo/
-
+.expo-shared/
 # dependencies
 /node_modules
 
