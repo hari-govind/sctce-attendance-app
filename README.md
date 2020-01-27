@@ -1,7 +1,8 @@
 
 
 # SCTCE Unofficial Attendance App
-An Android application for SCTCE students to view their attendance data.
+An Android application for SCTCE students to view their attendance data.  
+Download latest version: https://github.com/hari-govind/sctce-attendance-app/releases/download/v0.2.0/sctce-attendance-0-2-0.apk
 ### Preview
 
 <img src="https://github.com/hari-govind/sctce/blob/master/github_assets/app_preview.gif?raw=true" width="234px" height="415px" alt="App Preview GIF">
