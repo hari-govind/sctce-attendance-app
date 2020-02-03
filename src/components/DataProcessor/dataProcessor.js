@@ -115,7 +115,7 @@ var controller = {
                         })
                         .then(attendancePage => {
                             let $ = cheerio.load(attendancePage);
-                            return $(".widget-box:nth-child(4) .widget-content > div:nth-child(3)").html();
+                            return $(".widget-box:nth-child(5) .widget-content > div:nth-child(3)").html();
                         })
                         .then((attendanceTable) => {
                             resolve(attendanceTable);
