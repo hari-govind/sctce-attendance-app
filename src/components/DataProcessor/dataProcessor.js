@@ -327,7 +327,8 @@ var controller = {
                 cells = $(row).children("td").length
                 if (cells === 6) {
                     day = $(row).children("th").html().split('<', 1)[0].trim()
-                    date = day + '-' + month + '-' + year;
+                    day = day.length === 1 ? '0' + day : day;
+                    date = year + '-' + month + '-' + day;
                     periods = [];
                     let isEmpty = true;
                     let AbNumHrs = 0;
