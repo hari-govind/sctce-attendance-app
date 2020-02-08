@@ -15,12 +15,16 @@ export async function getSummaryJSON(username, password) {
 
 export async function getDetailsJSON(username, password) {
     return new Promise((resolve, reject) => {
-        controller.getDetailedHTML(username, password)
-            .then((content) => {
-                var data = controller.getDetailedAttendance(content);
-                resolve(data);
+        controller.getDetailedMetadata(username, password)
+            .then(metadata => {
+                controller.getCombinedAttendance(username, password, metadata)
+                    .then(json => {
+                        resolve(json)
+                    })
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                console.log(err)
+            })
     })
 }
 
@@ -269,42 +273,6 @@ var controller = {
                 })
         })
     },
-    getDetailedHTML: function (username, password) {
-        return new Promise((resolve, reject) => {
-            fetch('http://www.campusoftonline.com/atten/checklogin.php', {
-                method: 'POST',
-                body: `userid=${username}&mypassword=${password}&submit=Login`, headers: {
-                    Connection: 'keep-alive',
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-                .then(function (response) {
-                    try {
-                        return response.headers.get('set-cookie').split(';')[0];
-                    } catch (err) {
-                        return null
-                    }
-                })
-                .then(function (myJson) {
-                    fetch('http://www.campusoftonline.com/atten/attendance/student_search2.php?display=Detailed+Attendance',
-                        {
-                            method: 'GET', headers: {
-                                Cookie: myJson, Connection: 'keep-alive',
-                                Referer: 'http://www.campusoftonline.com/atten/attendance/student_search2.php',
-                                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0',
-                                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                                'Accept-Language': 'en-US,en;q=0.5'
-                            }
-                        })
-                        .then(function (data) {
-                            return data.text()
-                        })
-                        .then(function (html) {
-                            resolve(html)
-                        })
-                });
-        })
-    },
     getResponseHTML: function (username, password) {
         return new Promise((resolve, reject) => {
             fetch('http://www.campusoftonline.com/atten/checklogin.php', {
@@ -325,60 +293,126 @@ var controller = {
                 })
         })
     },
-    getDetailedAttendance: function (content) {
-        var $ = cheerio.load(content);
-        var allAttendanceData = [];
-        $('table').each(function (i, elem) {
-            if (i == 3) {
-                $neededTableBody = $(this).children();
-                $neededTableBody.children().each(function (j, elm) {
-                    if (j % 2 == 0) {
-                        $dateRow = $(elm);
-                        var date = $dateRow.text().trim();
-                        $detailsTableRows = $dateRow.next().children().eq(0).children().eq(0).children().eq(0).children('tr');
-                        var periods = [];
-                        DaySub = {};
-                        DaySub['Date'] = date;
-                        $detailsTableRows.each(function (k, detRow) {
-                            $rowCells = $(detRow).children();
-                            numOfPeriods = $rowCells.length;
-                        });
-                        $detailCells = $detailsTableRows.children();
-                        var number_of_abscents = 0;
-                        var number_of_presence = 0;
-                        for (var m = 1; m <= numOfPeriods; m++) {
-                            var period = {}
-                            $detailCells.filter('td:nth-child(' + m + ')').each(function (index, detailCell) {
-                                switch (index) {
-                                    case 0:
-                                        period['ID'] = $(detailCell).text().trim();
-                                        break;
-                                    case 1:
-                                        period['Subject'] = $(detailCell).text().trim();
-                                        break;
-                                    case 2:
-                                        period['Teacher'] = $(detailCell).text().trim();
-                                        break;
-                                    case 3:
-                                        period['Status'] = $(detailCell).text().trim();
-                                        if (period['Status'] == "A") {
-                                            number_of_abscents++;
-                                        } else if (period['Status'] == "P") {
-                                            number_of_presence++;
-                                        }
-                                        break;
-                                }
-                            })
-                            periods.push(period);
+    getDetailedMetadata: function (username, password) {
+        return new Promise((resolve, reject) => {
+            controller.getAuthorizationCookie(username, password)
+                .then((cookie) => {
+                    fetch('https://sctce.etlab.in/ktuacademics/student/attendance', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            //Cookie: cookie
                         }
-                        DaySub['Periods'] = periods;
-                        DaySub['AbNumHours'] = number_of_abscents;
-                        DaySub['PrNumHours'] = number_of_presence;
-                        allAttendanceData.push(DaySub);
+                    })
+                        .then(response => { return response.text() })
+                        .then(html => {
+                            let $ = cheerio.load(html);
+                            let semester = $("#semester").val();
+                            let year = $('#year').val();
+                            let months = new Array();
+                            $("#month > option").each((i, e) => { months.push($(e).val()) });
+                            let metadata = { Sem: semester, Year: year, Months: months };
+                            resolve(metadata);
+                        })
+                })
+        })
+    },
+    getDetailedJSON: function (html, payload) {
+        return new Promise((resolve, reject) => {
+            let $ = cheerio.load(html);
+            let result = [];
+            let month = payload['month'];
+            let year = payload['year'];
+            $("#itsthetable tr").each((i, row) => {
+                cells = $(row).children("td").length
+                if (cells === 6) {
+                    day = $(row).children("th").html().split('<', 1)[0].trim()
+                    date = day + '-' + month + '-' + year;
+                    periods = [];
+                    let isEmpty = true;
+                    let AbNumHrs = 0;
+                    let PrNumHrs = 0;
+                    $(row).children("td").each((i, period) => {
+                        let currentDay = {}
+                        if ($(period).text().trim() !== '') {
+                            subjectName = $(period).html().split('<s', 1)[0].split('>', 2)[1].replace('&amp;', '&').trim()
+                            if ($(period).hasClass("absent")) {
+                                status = "P";
+                                PrNumHrs++;
+                            } else {
+                                status = "A";
+                                AbNumHrs++;
+                            }
+                            id = i + 1;
+                            teacher = '';
+                            isEmpty = false;
+                        } else {
+                            subjectName = '';
+                            status = '-';
+                            teacher = '';
+                            id = i + 1;
+                        }
+                        currentDay['Subject'] = subjectName;
+                        currentDay['ID'] = id;
+                        currentDay['Status'] = status;
+                        currentDay['Teacher'] = '';
+                        periods.push(currentDay)
+                    })
+                    if (!isEmpty)
+                        result.push({ 'Date': date, 'Periods': periods, 'AbNumHrs': AbNumHrs, 'PrNumHrs': PrNumHrs })
+                }
+            })
+            resolve(result);
+        })
+    },
+    getCombinedAttendance: function (username, password, metadata) {
+        let url = "https://sctce.etlab.in/ktuacademics/student/attendance";
+        return new Promise((resolve, reject) => {
+            let semester = metadata['Sem'];
+            let year = metadata['Year'];
+            let months = metadata['Months'];
+            controller.getAuthorizationCookie(username, password)
+                .then(cookie => {
+                    let result = [];
+                    for (let i = 0; i < months.length; i++) {
+                        let month = months[i];
+                        fetch(url, {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                Connection: 'keep-alive',
+                                Host: 'sctce.etlab.in',
+                                Origin: 'https://sctce.etlab.in',
+                                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0',
+                                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                                'Accept-Language': 'en-US,en;q=0.5',
+                                'Accept-Encoding': 'gzip, deflate',
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                //Cookie: cookie,
+                            },
+                            body: `semester=${semester}&month=${month}&year=${year}`
+                        })
+                            .then((response) => {
+                                return response.text();
+                            })
+                            .then(html => {
+                                let payload = {};
+                                payload['month'] = '0' + month;
+                                payload['year'] = year;
+                                payload['semester'] = semester;
+                                controller.getDetailedJSON(html, payload)
+                                    .then(detailedJSON => {
+                                        result = result.concat(detailedJSON);
+                                        return result;
+                                    })
+                                    .then(finalData => {
+                                        if (i === months.length - 1) {
+                                            resolve(finalData)
+                                        }
+                                    })
+                            })
                     }
-                });
-            }
-        });
-        return allAttendanceData;
-    }
+                })
+        })
+    },
 }
