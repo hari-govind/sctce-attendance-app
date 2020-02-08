@@ -46,12 +46,12 @@ export default class Detailed extends React.Component {
        detailedJSON = this.state.detailed
        result = {}
        for(i=0;i<detailedJSON.length;i++){
-           num_of_abscents = detailedJSON[i]["AbNumHours"]
+           num_of_absents = detailedJSON[i]["AbNumHours"]
            num_of_presence = detailedJSON[i]["PrNumHours"]
            dots = [{color: 'orange'}]
            if(num_of_presence == 0){
                dots = [{color: 'red'}]
-           } else if(num_of_abscents==0){
+           } else if(num_of_absents==0){
                 dots = [{color: 'green'}]
            }
            result[detailedJSON[i]["Date"]] = {marked: true, dots: dots}
@@ -63,7 +63,6 @@ export default class Detailed extends React.Component {
         detailedJSON = this.state.detailed
         startdate = detailedJSON[0].Date
         enddate = detailedJSON[detailedJSON.length - 1].Date
-        
         result = {}
 
         //fill up all dates
@@ -228,7 +227,7 @@ state = {
         <FlatList
             ItemSeparatorComponent={this.renderSeparator}
             data={list_data}
-            keyExtractor={item => item.ID}
+            keyExtractor={item => item.ID.toString()}
             renderItem = {({item}) =>
             <View style={styles.data_container}>
                  <View style={styles.data_icon}>{this.renderIcon(item.Status)}</View> 
