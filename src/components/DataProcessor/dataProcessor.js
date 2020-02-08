@@ -14,6 +14,7 @@ export async function getSummaryJSON(username, password) {
 }
 
 export async function getDetailsJSON(username, password) {
+    RCTNetworking.clearCookies(() => { });
     return new Promise((resolve, reject) => {
         controller.getDetailedMetadata(username, password)
             .then(metadata => {
@@ -338,11 +339,11 @@ var controller = {
                         if ($(period).text().trim() !== '') {
                             subjectName = $(period).html().split('<s', 1)[0].split('>', 2)[1].replace('&amp;', '&').trim()
                             if ($(period).hasClass("absent")) {
-                                status = "P";
-                                PrNumHrs++;
-                            } else {
                                 status = "A";
                                 AbNumHrs++;
+                            } else {
+                                status = "P";
+                                PrNumHrs++;
                             }
                             id = i + 1;
                             teacher = '';
@@ -356,11 +357,11 @@ var controller = {
                         currentDay['Subject'] = subjectName;
                         currentDay['ID'] = id;
                         currentDay['Status'] = status;
-                        currentDay['Teacher'] = '';
+                        currentDay['Teacher'] = ' ';
                         periods.push(currentDay)
                     })
                     if (!isEmpty)
-                        result.push({ 'Date': date, 'Periods': periods, 'AbNumHrs': AbNumHrs, 'PrNumHrs': PrNumHrs })
+                        result.push({ 'Date': date, 'Periods': periods, 'AbNumHours': AbNumHrs, 'PrNumHours': PrNumHrs })
                 }
             })
             resolve(result);
