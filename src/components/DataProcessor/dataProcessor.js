@@ -366,54 +366,57 @@ var controller = {
             })
             resolve(result);
         })
+            .catch((err) => { reject(err) })
     },
     getCombinedAttendance: function (username, password, metadata) {
         let url = "https://sctce.etlab.in/ktuacademics/student/attendance";
         return new Promise((resolve, reject) => {
+            let all_data = [];
             let semester = metadata['Sem'];
             let year = metadata['Year'];
             let months = metadata['Months'];
             controller.getAuthorizationCookie(username, password)
                 .then(cookie => {
                     let result = [];
-                    for (let i = 0; i < months.length; i++) {
-                        let month = months[i];
-                        fetch(url, {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: {
-                                Connection: 'keep-alive',
-                                Host: 'sctce.etlab.in',
-                                Origin: 'https://sctce.etlab.in',
-                                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0',
-                                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                                'Accept-Language': 'en-US,en;q=0.5',
-                                'Accept-Encoding': 'gzip, deflate',
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                                //Cookie: cookie,
-                            },
-                            body: `semester=${semester}&month=${month}&year=${year}`
+                    all_data = months.map((month) => {
+                        return new Promise((resolve, reject) => {
+                            fetch(url, {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: {
+                                    Connection: 'keep-alive',
+                                    Host: 'sctce.etlab.in',
+                                    Origin: 'https://sctce.etlab.in',
+                                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0',
+                                    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                                    'Accept-Language': 'en-US,en;q=0.5',
+                                    'Accept-Encoding': 'gzip, deflate',
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    //Cookie: cookie,
+                                },
+                                body: `semester=${semester}&month=${month}&year=${year}`
+                            })
+                                .then((response) => {
+                                    return response.text();
+                                })
+                                .then(html => {
+                                    let payload = {};
+                                    payload['month'] = '0' + month;
+                                    payload['year'] = year;
+                                    payload['semester'] = semester;
+                                    controller.getDetailedJSON(html, payload)
+                                        .then(detailedJSON => {
+                                            resolve(detailedJSON)
+                                        })
+                                })
                         })
-                            .then((response) => {
-                                return response.text();
-                            })
-                            .then(html => {
-                                let payload = {};
-                                payload['month'] = '0' + month;
-                                payload['year'] = year;
-                                payload['semester'] = semester;
-                                controller.getDetailedJSON(html, payload)
-                                    .then(detailedJSON => {
-                                        result = result.concat(detailedJSON);
-                                        return result;
-                                    })
-                                    .then(finalData => {
-                                        if (i === months.length - 1) {
-                                            resolve(finalData)
-                                        }
-                                    })
-                            })
-                    }
+                    })
+                    Promise.all(all_data).then((monthsData) => {
+                        monthsData.forEach(data=>{
+                            result = result.concat(data);
+                        })
+                        resolve(result)
+                    })
                 })
         })
     },
