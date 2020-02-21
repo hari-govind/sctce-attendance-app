@@ -148,17 +148,17 @@ var controller = {
                     toAttend = Math.ceil(((attendance['totalClass'] * 0.75) - attendance['totalPresent']) / 0.25);
                     if (toAttend > 0) {
                         if (toAttend > 1)
-                            attendance['calculatedClass'] = `You need to attend next ${toAttend} classes.`;
+                            attendance['calculatedClass'] = `You need to attend next ${toAttend} hours.`;
                         else
-                            attendance['calculatedClass'] = "You Need to attend the next 1 class.";
+                            attendance['calculatedClass'] = "You Need to attend the next 1 hour.";
                     } else if (toAttend === 0) {
-                        attendance['calculatedClass'] = "Perfectly balanced, but you can't miss the next class.";
+                        attendance['calculatedClass'] = "Perfectly balanced, but you can't miss the next hour.";
                     } else {
                         canMiss = Math.floor((attendance['totalPresent'] - 0.75 * attendance['totalClass']) / 0.75);
                         if (canMiss > 1)
-                            attendance['calculatedClass'] = `You can miss next ${canMiss} classes.`;
+                            attendance['calculatedClass'] = `You can miss next ${canMiss} hours.`;
                         else
-                            attendance['calculatedClass'] = "You can miss the next 1 class.";
+                            attendance['calculatedClass'] = "You can miss the next 1 hour.";
                     }
                     percentage = attendance['percentage'];
                     if (percentage >= "85%" || percentage === "100%") {
