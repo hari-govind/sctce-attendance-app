@@ -401,7 +401,8 @@ var controller = {
                                 })
                                 .then(html => {
                                     let payload = {};
-                                    payload['month'] = '0' + month;
+                                    // Convert months in M format to MM
+									payload['month'] = month.length == 1 ? '0' + month : month;
                                     payload['year'] = year;
                                     payload['semester'] = semester;
                                     controller.getDetailedJSON(html, payload)
