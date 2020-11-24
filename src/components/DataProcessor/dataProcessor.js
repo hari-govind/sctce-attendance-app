@@ -1,5 +1,5 @@
 import cheerio from 'react-native-cheerio';
-const RCTNetworking = require('RCTNetworking');
+const RCTNetworking = require('react-native/Libraries/Network/RCTNetworking');
 
 export async function getSummaryJSON(username, password) {
     return new Promise((resolve, reject) => {

@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, Text, AsyncStorage, SwipeableFlatList, StyleSheet,
+import SwipeableFlatList from 'react-native-swipeable-list';
+import {View, Text, AsyncStorage, StyleSheet,
         TouchableNativeFeedback, TouchableHighlight, ToastAndroid,
         Alert, Modal, ActivityIndicator,Button,ScrollView} from 'react-native';
 
