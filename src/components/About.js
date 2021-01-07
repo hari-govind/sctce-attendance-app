@@ -44,14 +44,6 @@ export default class About extends React.Component {
                   onPress={() => Linking.openURL('mailto:hello@harigovind.org?Subject=SCTCE%20Application%20Feedback')}
                   > hello@harigovind.org 
                   </Text>
-                  <Text style={styles.caption}>
-                    Help us develop better by taking this single question survey:
-                  </Text>
-                  <Text
-                  style={{color:'cornflowerblue'}}
-                  onPress={() => Linking.openURL('https://poll.disroot.org/QXse96QMyAeOPIKW')}
-                  > Survey Link
-                  </Text>
                   <Text style={styles.heading}>License and Source</Text>
                   <Text style={styles.caption}>
                     SCTCE Unofficial Attendance app is a free/libre software licensed under GPL v3.0, which means that you have the freedom to run, copy, distribute, study, change and improve the software.

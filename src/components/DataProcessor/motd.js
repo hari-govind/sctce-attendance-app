@@ -5,15 +5,6 @@ import { Text, View, Linking } from 'react-native';
 
 let tips = [
     <Text style={{ textAlign: 'center' }}>
-        We have a user survey where you can vote on features and improvements that you would like to see the most.
-            <Text
-            style={{ color: 'cornflowerblue' }}
-            onPress={() => Linking.openURL('https://poll.disroot.org/QXse96QMyAeOPIKW')}
-        > Click here
-            </Text>
-        {' '}to vote and make your opinion count.
-        </Text>,
-    <Text style={{ textAlign: 'center' }}>
         You can either click on the blue bar at the top that says "Pull down for calender"
         or click and drag it down to get monthly attendance view, which is especially handy when
         writing leave letters or condonation.
