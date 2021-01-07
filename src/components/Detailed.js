@@ -20,7 +20,7 @@ export default class Detailed extends React.Component {
             this.setState({ ActiveAccount: (JSON.parse(await AsyncStorage.getItem('ActiveAccount'))) })
             ActiveAccount = this.state.ActiveAccount
             this.setState({ hasActiveRecord: true })
-            this.setState({Tip: await getMOTD()})
+            this.setState({ Tip: await getMOTD() })
             //binding this to reactThis to be used inside function block
             reactThis = this
             getDetailsJSON(ActiveAccount.reg_no, ActiveAccount.password)
@@ -104,8 +104,9 @@ export default class Detailed extends React.Component {
 
         //end of fill up all dates
 
-
-        numberofmonths = Number(enddate.split("-")[1]) - Number(startdate.split("-")[1])
+        // Rougly caclulates the number of months between startdate and enddate
+        // Date(enddate) - Date(startdate) will give difference in ms, dividing to get months
+        numberofmonths = Math.ceil((new Date(enddate) - new Date(startdate)) / (2678400000));
         for (i = 0; i < detailedJSON.length; i++) {
             period = []
             periods = detailedJSON[i]["Periods"]
@@ -140,7 +141,10 @@ export default class Detailed extends React.Component {
 
     async componentDidMount() {
         this.setState({ error: false })
-        this.reloadData()
+        // No need to reload if already being reloaded by onDidFocus navigation event.
+        if (this.state.isLoaded) {
+            this.reloadData()
+        }
     }
 
     state = {
@@ -205,8 +209,8 @@ export default class Detailed extends React.Component {
                             </View>
                         </View>
                     ) : <View><ActivityIndicator size={75} color="tomato" /><Text style={styles.loadingText}>{this.state.LoadingStatus}</Text>
-                    {this.state.Tip}
-                    </View>
+                            {this.state.Tip}
+                        </View>
                 }
             </View>
         );

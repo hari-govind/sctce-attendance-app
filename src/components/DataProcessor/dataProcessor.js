@@ -309,10 +309,26 @@ var controller = {
                         .then(html => {
                             let $ = cheerio.load(html);
                             let semester = $("#semester").val();
-                            let year = $('#year').val();
                             let months = new Array();
                             $("#month > option").each((i, e) => { months.push($(e).val()) });
-                            let metadata = { Sem: semester, Year: year, Months: months };
+                            let years = new Array();
+                            $('#year > option').each((i, e) => { years.push($(e).val()); });
+                            let dateRange = {};
+                            // For semesters spanning different years (Eg: Aug-Jan)
+                            dateRange[years[0]] = [months[0]];
+                            for (let i = 1; i < months.length; i++) {
+                                if (parseInt(months[i]) < parseInt(months[i - 1])) { //Change in year when month value decreases
+                                    year = years[1];
+                                } else {
+                                    year = years[0];
+                                }
+                                if (dateRange[year] === undefined) {
+                                    dateRange[year] = [months[i]];
+                                } else {
+                                    dateRange[year].push(months[i]);
+                                }
+                            }
+                            let metadata = { Sem: semester, Year: year, Months: months, DateRange: dateRange };
                             resolve(metadata);
                         })
                 })
@@ -371,52 +387,54 @@ var controller = {
     getCombinedAttendance: function (username, password, metadata) {
         let url = "https://sctce.etlab.in/ktuacademics/student/attendance";
         return new Promise((resolve, reject) => {
-            let all_data = [];
+            let monthlyData = [];
             let semester = metadata['Sem'];
-            let year = metadata['Year'];
-            let months = metadata['Months'];
+            let dateRange = metadata['DateRange'];
             controller.getAuthorizationCookie(username, password)
                 .then(cookie => {
                     let result = [];
-                    all_data = months.map((month) => {
-                        return new Promise((resolve, reject) => {
-                            fetch(url, {
-                                method: 'POST',
-                                credentials: 'include',
-                                headers: {
-                                    Connection: 'keep-alive',
-                                    Host: 'sctce.etlab.in',
-                                    Origin: 'https://sctce.etlab.in',
-                                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0',
-                                    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                                    'Accept-Language': 'en-US,en;q=0.5',
-                                    'Accept-Encoding': 'gzip, deflate',
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                    //Cookie: cookie,
-                                },
-                                body: `semester=${semester}&month=${month}&year=${year}`
-                            })
-                                .then((response) => {
-                                    return response.text();
+                    let completeResults = [];
+                    for (const [year, months] of Object.entries(dateRange)) {
+                        monthlyData = months.map((month) => {
+                            completeResults.push(new Promise((resolve, reject) => {
+                                fetch(url, {
+                                    method: 'POST',
+                                    credentials: 'include',
+                                    headers: {
+                                        Connection: 'keep-alive',
+                                        Host: 'sctce.etlab.in',
+                                        Origin: 'https://sctce.etlab.in',
+                                        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0',
+                                        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                                        'Accept-Language': 'en-US,en;q=0.5',
+                                        'Accept-Encoding': 'gzip, deflate',
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                        //Cookie: cookie,
+                                    },
+                                    body: `semester=${semester}&month=${month}&year=${year}`
                                 })
-                                .then(html => {
-                                    let payload = {};
-                                    // Convert months in M format to MM
-									payload['month'] = month.length == 1 ? '0' + month : month;
-                                    payload['year'] = year;
-                                    payload['semester'] = semester;
-                                    controller.getDetailedJSON(html, payload)
-                                        .then(detailedJSON => {
-                                            resolve(detailedJSON)
-                                        })
-                                })
+                                    .then((response) => {
+                                        return response.text();
+                                    })
+                                    .then(html => {
+                                        let payload = {};
+                                        // Convert months in M format to MM
+                                        payload['month'] = month.length == 1 ? '0' + month : month;
+                                        payload['year'] = year;
+                                        payload['semester'] = semester;
+                                        controller.getDetailedJSON(html, payload)
+                                            .then(detailedJSON => {
+                                                resolve(detailedJSON)
+                                            })
+                                    })
+                            }))
                         })
-                    })
-                    Promise.all(all_data).then((monthsData) => {
-                        monthsData.forEach(data=>{
+                    }
+                    Promise.all(completeResults).then((monthsData) => {
+                        monthsData.forEach(data => {
                             result = result.concat(data);
                         })
-                        resolve(result)
+                        resolve(result);
                     })
                 })
         })

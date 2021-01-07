@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "SCTCE",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "slug": "sctce-attendance",
     "orientation": "portrait",
     "icon": "./src/images/icon.png",
